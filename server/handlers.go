@@ -218,6 +218,11 @@ func getBodyAsInt64(ctx echo.Context) (int64, error) {
 
 // String methods ------------------------------
 
+type outputGetStr struct {
+	outputCommon
+	ValueStr string `json:"value_str"`
+}
+
 /*
 getStr - get one string value by key
 
@@ -226,11 +231,6 @@ result:
 	{"error_code":0,"value_str":"string value"}
 */
 func (app *server) getStr(ctx echo.Context) error {
-	type outputGetStr struct {
-		outputCommon
-		ValueStr string `json:"value_str"`
-	}
-
 	key := ctx.Param("key")
 	valueStr, err := app.raphanus.GetStr(key)
 	if err != nil {
@@ -351,6 +351,54 @@ func (app *server) updateList(ctx echo.Context) error {
 
 	key := ctx.Param("key")
 	if err := app.raphanus.UpdateList(key, newListValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+/*
+getListItem - get one item from list value by key and index in list
+
+curl -s 'http://localhost:8771/v1/list/item/k1?idx=1'
+result:
+	{"result": "ok", "value_str": "l2"}
+*/
+func (app *server) getListItem(ctx echo.Context) error {
+	index, err := strconv.Atoi(ctx.QueryParam("idx"))
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	valueStr, err := app.raphanus.GetListItem(key, index)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
+}
+
+/*
+setListItem - set one item on list value by key and index in list
+
+curl -s -X PUT -d "l3" 'http://localhost:8771/v1/list/item/k1?idx=1'
+result:
+	{"error_code":0}
+*/
+func (app *server) setListItem(ctx echo.Context) error {
+	index, err := strconv.Atoi(ctx.QueryParam("idx"))
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	newStrValue, err := getBodyAsString(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	if err := app.raphanus.SetListItem(key, index, newStrValue); err != nil {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
