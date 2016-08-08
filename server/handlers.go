@@ -70,6 +70,11 @@ func (app *server) handlerLength(ctx echo.Context) error {
 
 // Integer methods ------------------------------
 
+type outputGetInt struct {
+	outputCommon
+	ValueInt int64 `json:"value_int"`
+}
+
 /*
 getInt - get one integer value by key
 
@@ -78,11 +83,6 @@ result:
 	{"error_code":0,"value_int":737}
 */
 func (app *server) getInt(ctx echo.Context) error {
-	type outputGetInt struct {
-		outputCommon
-		ValueInt int64 `json:"value_int"`
-	}
-
 	key := ctx.Param("key")
 	valueInt, err := app.raphanus.GetInt(key)
 	if err != nil {
@@ -132,6 +132,72 @@ func (app *server) updateInt(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+/*
+incrInt - increment one value
+
+curl -s -X POST http://localhost:8771/v1/int/incr/k1
+result:
+	{"error_code":0,"value_int":738}
+*/
+func (app *server) incrInt(ctx echo.Context) error {
+	key := ctx.Param("key")
+
+	var (
+		err      error
+		valueInt int64
+	)
+	app.raphanus.UnderLock(func() {
+		err = app.raphanus.IncrInt(key)
+		if err != nil {
+			return
+		}
+		valueInt, err = app.raphanus.GetInt(key)
+		if err != nil {
+			return
+		}
+	})
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	result := outputGetInt{ValueInt: valueInt}
+	return ctx.JSON(http.StatusOK, result)
+}
+
+/*
+decrInt - decrement one value
+
+curl -s -X POST http://localhost:8771/v1/int/decr/k1
+result:
+	{"error_code":0,"value_int":736}
+*/
+func (app *server) decrInt(ctx echo.Context) error {
+	key := ctx.Param("key")
+
+	var (
+		err      error
+		valueInt int64
+	)
+	app.raphanus.UnderLock(func() {
+		err = app.raphanus.DecrInt(key)
+		if err != nil {
+			return
+		}
+		valueInt, err = app.raphanus.GetInt(key)
+		if err != nil {
+			return
+		}
+	})
+
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	result := outputGetInt{ValueInt: valueInt}
+	return ctx.JSON(http.StatusOK, result)
 }
 
 // getBodyAsInt64 - get body of request as int64

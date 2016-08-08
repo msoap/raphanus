@@ -38,6 +38,8 @@ func (app *server) run() {
 	v1API.GET("/int/:key", app.getInt)
 	v1API.POST("/int/:key", app.setInt)
 	v1API.PUT("/int/:key", app.updateInt)
+	v1API.POST("/int/incr/:key", app.incrInt)
+	v1API.POST("/int/decr/:key", app.decrInt)
 
 	log.Printf("Server run on %s", defaultAddress)
 	echoServer.Run(standard.New(defaultAddress))
