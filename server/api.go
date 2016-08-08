@@ -44,6 +44,10 @@ func (app *server) run() {
 	v1API.GET("/str/:key", app.getStr)
 	v1API.POST("/str/:key", app.setStr)
 	v1API.PUT("/str/:key", app.updateStr)
+	// list methods
+	v1API.GET("/list/:key", app.getList)
+	v1API.POST("/list/:key", app.setList)
+	v1API.PUT("/list/:key", app.updateList)
 
 	log.Printf("Server run on %s", app.cfg.address)
 	echoServer.Run(standard.New(app.cfg.address))

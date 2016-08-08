@@ -127,8 +127,7 @@ func (app *server) updateInt(ctx echo.Context) error {
 	}
 
 	key := ctx.Param("key")
-	err = app.raphanus.UpdateInt(key, newIntValue)
-	if err != nil {
+	if err := app.raphanus.UpdateInt(key, newIntValue); err != nil {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
@@ -275,8 +274,7 @@ func (app *server) updateStr(ctx echo.Context) error {
 	}
 
 	key := ctx.Param("key")
-	err = app.raphanus.UpdateStr(key, newStrValue)
-	if err != nil {
+	if err := app.raphanus.UpdateStr(key, newStrValue); err != nil {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
@@ -292,4 +290,69 @@ func getBodyAsString(ctx echo.Context) (string, error) {
 	}
 
 	return string(bytes), nil
+}
+
+// List methods ------------------------------
+
+/*
+getList - get one list value by key
+
+curl -s http://localhost:8771/v1/list/k1
+result:
+	{"error_code":0,"value_list":["l1", "l2", "l3"]}
+*/
+func (app *server) getList(ctx echo.Context) error {
+	type outputGetList struct {
+		outputCommon
+		ValueList []string `json:"value_list"`
+	}
+
+	key := ctx.Param("key")
+	valueList, err := app.raphanus.GetList(key)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	result := outputGetList{ValueList: valueList}
+	return ctx.JSON(http.StatusOK, result)
+}
+
+/*
+setList - set one list value by key
+
+curl -s -X POST -H 'Content-Type: application/json' -d '["l1", "l2", "l3"]' http://localhost:8771/v1/list/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) setList(ctx echo.Context) error {
+	newListValue := []string{}
+	if err := ctx.Bind(&newListValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	app.raphanus.SetList(key, newListValue)
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+/*
+updateList - updateList one list value by exists key
+
+curl -s -X PUT -H 'Content-Type: application/json' -d '["l1", "l2"]' http://localhost:8771/v1/list/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) updateList(ctx echo.Context) error {
+	newListValue := []string{}
+	if err := ctx.Bind(&newListValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	if err := app.raphanus.UpdateList(key, newListValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
