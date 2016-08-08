@@ -37,6 +37,7 @@ func (app *server) run() {
 	// integer methods
 	v1API.GET("/int/:key", app.getInt)
 	v1API.POST("/int/:key", app.setInt)
+	v1API.PUT("/int/:key", app.updateInt)
 
 	log.Printf("Server run on %s", defaultAddress)
 	echoServer.Run(standard.New(defaultAddress))

@@ -112,6 +112,28 @@ func (app *server) setInt(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
 
+/*
+updateInt - set one integer value by key
+
+curl -s -X PUT -d 127 http://localhost:8771/v1/int/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) updateInt(ctx echo.Context) error {
+	newIntValue, err := getBodyAsInt64(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	err = app.raphanus.UpdateInt(key, newIntValue)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
 // getBodyAsInt64 - get body of request as int64
 func getBodyAsInt64(ctx echo.Context) (int64, error) {
 	// read first 20 bytes
