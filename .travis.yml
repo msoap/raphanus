@@ -1,0 +1,29 @@
+language: go
+sudo: false
+
+env:
+  global:
+    - CURRENT_GO_VERSION="1.6.3"
+
+go:
+  - 1.6.3
+  - tip
+
+before_install:
+  - go get github.com/modocache/gover
+  - go get github.com/mattn/goveralls
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/kisielk/errcheck
+
+script:
+  - go test -v ./...
+  - if [ "$TRAVIS_GO_VERSION" = "$CURRENT_GO_VERSION" ]; then go test -race -v ./...; fi
+  - go vet ./...
+  - errcheck ./...
+  - diff <(gofmt -d . server) <(echo -n "")
+  - go test -coverprofile=server.coverprofile ./server
+  - go test -coverprofile=main.coverprofile
+  - $HOME/gopath/bin/gover
+  - if [ "$TRAVIS_GO_VERSION" = "$CURRENT_GO_VERSION" ]; then
+      $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci || true;
+    fi
