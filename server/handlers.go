@@ -337,7 +337,7 @@ func (app *server) setList(ctx echo.Context) error {
 }
 
 /*
-updateList - updateList one list value by exists key
+updateList - update one list value by exists key
 
 curl -s -X PUT -H 'Content-Type: application/json' -d '["l1", "l2"]' http://localhost:8771/v1/list/k1
 result:
@@ -399,6 +399,71 @@ func (app *server) setListItem(ctx echo.Context) error {
 
 	key := ctx.Param("key")
 	if err := app.raphanus.SetListItem(key, index, newStrValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+// Dict methods ------------------------------
+
+/*
+getDict - get one dict value by key
+
+curl -s http://localhost:8771/v1/dict/k1
+result:
+	{"error_code":0, "value_list": {"dk1": "v1", "dk2": "v2"}}
+*/
+func (app *server) getDict(ctx echo.Context) error {
+	type outputGetDict struct {
+		outputCommon
+		ValueDict raphanus.DictValue `json:"value_dict"`
+	}
+
+	key := ctx.Param("key")
+	valueDict, err := app.raphanus.GetDict(key)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	result := outputGetDict{ValueDict: valueDict}
+	return ctx.JSON(http.StatusOK, result)
+}
+
+/*
+setDict - set one dict value by key
+
+curl -s -X POST -H 'Content-Type: application/json' -d '{"dk1": "v1", "dk2": "v2"}' http://localhost:8771/v1/dict/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) setDict(ctx echo.Context) error {
+	newDictValue := raphanus.DictValue{}
+	if err := ctx.Bind(&newDictValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	app.raphanus.SetDict(key, newDictValue)
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+/*
+updateDict - update one dict value by exists key
+
+curl -s -X PUT -H 'Content-Type: application/json' -d '{"dk1": "v33"}' http://localhost:8771/v1/dict/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) updateDict(ctx echo.Context) error {
+	newDictValue := raphanus.DictValue{}
+	if err := ctx.Bind(&newDictValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	if err := app.raphanus.UpdateDict(key, newDictValue); err != nil {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 

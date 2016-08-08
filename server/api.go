@@ -50,6 +50,10 @@ func (app *server) run() {
 	v1API.PUT("/list/:key", app.updateList)
 	v1API.GET("/list/item/:key", app.getListItem)
 	v1API.PUT("/list/item/:key", app.setListItem)
+	// dict methods
+	v1API.GET("/dict/:key", app.getDict)
+	v1API.POST("/dict/:key", app.setDict)
+	v1API.PUT("/dict/:key", app.updateDict)
 
 	log.Printf("Server run on %s", app.cfg.address)
 	echoServer.Run(standard.New(app.cfg.address))
