@@ -6,6 +6,7 @@ package raphanus
 import (
 	"errors"
 	"sync"
+	"time"
 )
 
 // MaxStringValueLength - string value max length
@@ -20,7 +21,7 @@ var (
 
 type value struct {
 	val interface{}
-	ttl int
+	ttl time.Time
 }
 
 // DB - in-memory cache object
