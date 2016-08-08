@@ -45,6 +45,6 @@ func (app *server) run() {
 	v1API.POST("/str/:key", app.setStr)
 	v1API.PUT("/str/:key", app.updateStr)
 
-	log.Printf("Server run on %s", defaultAddress)
-	echoServer.Run(standard.New(defaultAddress))
+	log.Printf("Server run on %s", app.cfg.address)
+	echoServer.Run(standard.New(app.cfg.address))
 }
