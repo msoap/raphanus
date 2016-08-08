@@ -12,7 +12,7 @@ From source:
 
 Download from github [releases](https://github.com/msoap/raphanus/releases)
 
-From Docker image:
+From Docker hub:
 
     docker pull msoap/raphanus
 
@@ -29,14 +29,13 @@ as Docker container:
 ```Go
 import (
     "github.com/msoap/raphanus"
-    raphanuscommon "github.com/msoap/raphanus/common"
 )
 
 func main() {
     raph := raphanus.New()
     raph.SetStr("key", "value")
     v, err := raph.GetStr("key")
-    if err == raphanuscommon.ErrKeyNotExists {
+    if err == raphanus.ErrKeyNotExists {
         ...
     }
 
@@ -68,7 +67,6 @@ func main() {
 ```Go
 import (
     raphanusclient "github.com/msoap/raphanus/client"
-    raphanuscommon "github.com/msoap/raphanus/common"
 )
 
 func main() {
@@ -76,7 +74,7 @@ func main() {
     raph := raphanusclient.NewWithAddr("http://localhost:8770")
     raph.SetStr("key", "value")
     v, err := raph.GetStr("key")
-    if err == raphanuscommon.ErrKeyNotExists {
+    if err == raphanus.ErrKeyNotExists {
         ...
     }
 }
