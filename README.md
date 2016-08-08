@@ -22,7 +22,7 @@ From Docker hub:
 
 ## Run server
 
-    raphanus-server [-port NNNN]
+    raphanus-server [-address host:port]
 
 as Docker container:
 
