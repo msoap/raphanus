@@ -15,6 +15,7 @@ const MaxStringValueLength = 1024 * 1024 // 1 MB
 var (
 	ErrKeyNotExists     = errors.New("Key not exists")
 	ErrKeyTypeMissmatch = errors.New("The type does not match")
+	ErrListOutOfRange   = errors.New("List index is out of range")
 )
 
 type value struct {
