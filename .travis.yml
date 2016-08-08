@@ -15,6 +15,8 @@ before_install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/kisielk/errcheck
 
+install: go get -t ./...
+
 script:
   - go test -v ./...
   - if [ "$TRAVIS_GO_VERSION" = "$CURRENT_GO_VERSION" ]; then go test -race -v ./...; fi
