@@ -52,6 +52,22 @@ func (app *server) handlerRemoveKey(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
 
+/*
+handlerLength - get count of keys
+
+curl -s http://localhost:8771/v1/length
+result:
+	{"error_code":0, "length": 3}
+*/
+func (app *server) handlerLength(ctx echo.Context) error {
+	type outputLength struct {
+		outputCommon
+		Length int `json:"length"`
+	}
+	len := app.raphanus.Len()
+	return ctx.JSON(http.StatusOK, outputLength{Length: len})
+}
+
 // Integer methods ------------------------------
 
 /*
