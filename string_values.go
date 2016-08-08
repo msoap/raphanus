@@ -1,7 +1,7 @@
 package raphanus
 
 // GetStr - get string value by key
-func (db *DB) GetStr(key string) (value string, err error) {
+func (db *DB) GetStr(key string) (string, error) {
 	if db.withLock {
 		db.RLock()
 		defer db.RUnlock()
@@ -9,15 +9,15 @@ func (db *DB) GetStr(key string) (value string, err error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return value, ErrKeyNotExists
+		return "", ErrKeyNotExists
 	}
 
-	value, ok = rawVal.val.(string)
+	value, ok := rawVal.val.(string)
 	if !ok {
-		return value, ErrKeyTypeMissmatch
+		return "", ErrKeyTypeMissmatch
 	}
 
-	return value, err
+	return value, nil
 }
 
 // SetStr - create/update string value by key

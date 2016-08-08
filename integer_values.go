@@ -1,7 +1,7 @@
 package raphanus
 
 // GetInt - get integer value by key
-func (db *DB) GetInt(key string) (value int64, err error) {
+func (db *DB) GetInt(key string) (int64, error) {
 	if db.withLock {
 		db.RLock()
 		defer db.RUnlock()
@@ -9,15 +9,15 @@ func (db *DB) GetInt(key string) (value int64, err error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return value, ErrKeyNotExists
+		return 0, ErrKeyNotExists
 	}
 
-	value, ok = rawVal.val.(int64)
+	value, ok := rawVal.val.(int64)
 	if !ok {
-		return value, ErrKeyTypeMissmatch
+		return 0, ErrKeyTypeMissmatch
 	}
 
-	return value, err
+	return value, nil
 }
 
 // SetInt - create/update integer value by key
