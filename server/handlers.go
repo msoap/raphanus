@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
+	"github.com/msoap/raphanus"
 )
 
 // outputCommon - common part of all responses
@@ -214,4 +215,81 @@ func getBodyAsInt64(ctx echo.Context) (int64, error) {
 		return 0, err
 	}
 	return intValue, nil
+}
+
+// String methods ------------------------------
+
+/*
+getStr - get one string value by key
+
+curl -s http://localhost:8771/v1/str/k1
+result:
+	{"error_code":0,"value_str":"string value"}
+*/
+func (app *server) getStr(ctx echo.Context) error {
+	type outputGetStr struct {
+		outputCommon
+		ValueStr string `json:"value_str"`
+	}
+
+	key := ctx.Param("key")
+	valueStr, err := app.raphanus.GetStr(key)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	result := outputGetStr{ValueStr: valueStr}
+	return ctx.JSON(http.StatusOK, result)
+}
+
+/*
+setStr - set one string value by key
+
+curl -s -X POST -d "string value" http://localhost:8771/v1/str/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) setStr(ctx echo.Context) error {
+	newStrValue, err := getBodyAsString(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	app.raphanus.SetStr(key, newStrValue)
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+/*
+updateStr - set one string value by key
+
+curl -s -X PUT -d "new value" http://localhost:8771/v1/str/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) updateStr(ctx echo.Context) error {
+	newStrValue, err := getBodyAsString(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	err = app.raphanus.UpdateStr(key, newStrValue)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+// getBodyAsString - get body of request as string
+func getBodyAsString(ctx echo.Context) (string, error) {
+	limitBody := io.LimitReader(ctx.Request().Body(), raphanus.MaxStringValueLength)
+	bytes, err := ioutil.ReadAll(limitBody)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
 }

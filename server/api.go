@@ -40,6 +40,10 @@ func (app *server) run() {
 	v1API.PUT("/int/:key", app.updateInt)
 	v1API.POST("/int/incr/:key", app.incrInt)
 	v1API.POST("/int/decr/:key", app.decrInt)
+	// string methods
+	v1API.GET("/str/:key", app.getStr)
+	v1API.POST("/str/:key", app.setStr)
+	v1API.PUT("/str/:key", app.updateStr)
 
 	log.Printf("Server run on %s", defaultAddress)
 	echoServer.Run(standard.New(defaultAddress))
