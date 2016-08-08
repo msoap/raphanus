@@ -1,5 +1,6 @@
 package raphanus
 
+// GetInt - get integer value by key
 func (db *DB) GetInt(key string) (value int64, err error) {
 	if db.withLock {
 		db.RLock()
@@ -19,6 +20,7 @@ func (db *DB) GetInt(key string) (value int64, err error) {
 	return value, err
 }
 
+// SetInt - create/update integer value by key
 func (db *DB) SetInt(key string, value int64) {
 	if db.withLock {
 		db.Lock()
@@ -32,6 +34,7 @@ func (db *DB) SetInt(key string, value int64) {
 	return
 }
 
+// UpdateInt - update integer value by exists key
 func (db *DB) UpdateInt(key string, value int64) (err error) {
 	if db.withLock {
 		db.Lock()
@@ -50,6 +53,7 @@ func (db *DB) UpdateInt(key string, value int64) (err error) {
 	return nil
 }
 
+// IncrInt - increment integer value on 1
 func (db *DB) IncrInt(key string) (err error) {
 	if db.withLock {
 		db.Lock()
@@ -60,6 +64,7 @@ func (db *DB) IncrInt(key string) (err error) {
 	return err
 }
 
+// DecrInt - decrement integer value on 1
 func (db *DB) DecrInt(key string) (err error) {
 	if db.withLock {
 		db.Lock()

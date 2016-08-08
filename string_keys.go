@@ -1,5 +1,6 @@
 package raphanus
 
+// GetStr - get string value by key
 func (db *DB) GetStr(key string) (value string, err error) {
 	if db.withLock {
 		db.RLock()
@@ -19,6 +20,7 @@ func (db *DB) GetStr(key string) (value string, err error) {
 	return value, err
 }
 
+// SetStr - create/update string value by key
 func (db *DB) SetStr(key, value string) {
 	if db.withLock {
 		db.Lock()
@@ -32,6 +34,7 @@ func (db *DB) SetStr(key, value string) {
 	return
 }
 
+// UpdateStr - update string value by exists key
 func (db *DB) UpdateStr(key, value string) (err error) {
 	if db.withLock {
 		db.Lock()

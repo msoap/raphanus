@@ -8,6 +8,7 @@ import (
 	"sync"
 )
 
+// Common errors
 var (
 	ErrKeyNotExists     = errors.New("Key not exists")
 	ErrKeyTypeMissmatch = errors.New("The type does not match")
@@ -18,12 +19,14 @@ type value struct {
 	ttl int
 }
 
+// DB - in-memory cache object
 type DB struct {
 	data     map[string]value
 	withLock bool // execute get/set methods under lock
 	*sync.RWMutex
 }
 
+// New - get new cache object
 func New() DB {
 	return DB{
 		data:     map[string]value{},
@@ -32,6 +35,7 @@ func New() DB {
 	}
 }
 
+// UnderRLock - execute few read-methods undef one RLock
 func (db *DB) UnderRLock(fn func()) {
 	db.RLock()
 	db.withLock = false
@@ -40,6 +44,7 @@ func (db *DB) UnderRLock(fn func()) {
 	db.withLock = true
 }
 
+// UnderLock - execute few RW-methods undef one Lock
 func (db *DB) UnderLock(fn func()) {
 	db.Lock()
 	db.withLock = false
@@ -48,6 +53,7 @@ func (db *DB) UnderLock(fn func()) {
 	db.withLock = true
 }
 
+// Remove - remove key from cache
 func (db *DB) Remove(key string) (err error) {
 	if db.withLock {
 		db.Lock()
@@ -63,6 +69,7 @@ func (db *DB) Remove(key string) (err error) {
 	return nil
 }
 
+// Keys - get all keys from cache (as []string)
 func (db *DB) Keys() []string {
 	if db.withLock {
 		db.RLock()
@@ -77,6 +84,7 @@ func (db *DB) Keys() []string {
 	return result
 }
 
+// Len - return length of cache
 func (db *DB) Len() int {
 	return len(db.data)
 }
