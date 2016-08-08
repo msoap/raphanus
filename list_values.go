@@ -1,7 +1,10 @@
 package raphanus
 
+// ListValue - list value type
+type ListValue []string
+
 // GetList - get list value by key
-func (db *DB) GetList(key string) (value []string, err error) {
+func (db *DB) GetList(key string) (value ListValue, err error) {
 	if db.withLock {
 		db.RLock()
 		defer db.RUnlock()
@@ -12,7 +15,7 @@ func (db *DB) GetList(key string) (value []string, err error) {
 		return value, ErrKeyNotExists
 	}
 
-	value, ok = rawVal.val.([]string)
+	value, ok = rawVal.val.(ListValue)
 	if !ok {
 		return value, ErrKeyTypeMissmatch
 	}
@@ -21,7 +24,7 @@ func (db *DB) GetList(key string) (value []string, err error) {
 }
 
 // SetList - create/update list value by key
-func (db *DB) SetList(key string, value []string) {
+func (db *DB) SetList(key string, value ListValue) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -35,7 +38,7 @@ func (db *DB) SetList(key string, value []string) {
 }
 
 // UpdateList - update list value by exists key
-func (db *DB) UpdateList(key string, value []string) (err error) {
+func (db *DB) UpdateList(key string, value ListValue) (err error) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -64,7 +67,7 @@ func (db *DB) GetListItem(key string, index int) (string, error) {
 		return "", ErrKeyNotExists
 	}
 
-	valueList, ok := rawVal.val.([]string)
+	valueList, ok := rawVal.val.(ListValue)
 	if !ok {
 		return "", ErrKeyTypeMissmatch
 	}
@@ -89,7 +92,7 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 		return ErrKeyNotExists
 	}
 
-	valueList, ok := rawVal.val.([]string)
+	valueList, ok := rawVal.val.(ListValue)
 	if !ok {
 		return ErrKeyTypeMissmatch
 	}
@@ -98,6 +101,6 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 		return ErrListOutOfRange
 	}
 
-	db.data[key].val.([]string)[index] = value
+	db.data[key].val.(ListValue)[index] = value
 	return nil
 }
