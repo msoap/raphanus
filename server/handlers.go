@@ -15,6 +15,9 @@ type outputCommon struct {
 	ErrorMessage string `json:"error_message,omitempty"`
 }
 
+// allocate result for success calls
+var outputCommonOK = outputCommon{}
+
 /*
 handlerKeys - get all keys
 
@@ -30,6 +33,23 @@ func (app *server) handlerKeys(ctx echo.Context) error {
 
 	result := outputKeys{Keys: app.raphanus.Keys()}
 	return ctx.JSON(http.StatusOK, result)
+}
+
+/*
+handlerRemoveKey - remove key
+
+curl -s -X DELETE http://localhost:8771/v1/remove/k1
+result:
+	{"error_code":0}
+*/
+func (app *server) handlerRemoveKey(ctx echo.Context) error {
+	key := ctx.Param("key")
+	err := app.raphanus.Remove(key)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
 
 // Integer methods ------------------------------
@@ -73,7 +93,7 @@ func (app *server) setInt(ctx echo.Context) error {
 	key := ctx.Param("key")
 	app.raphanus.SetInt(key, newIntValue)
 
-	return ctx.JSON(http.StatusOK, outputCommon{})
+	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
 
 // getBodyAsInt64 - get body of request as int64
