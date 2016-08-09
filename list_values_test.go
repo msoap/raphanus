@@ -44,11 +44,23 @@ func Test_ListMethods02(t *testing.T) {
 		t.Error("List not equal, got: %v, expected: %v", val, []string{"value", "3"})
 	}
 
+	err = raph.UpdateList("key", []string{"value", "5"})
+	if err != nil {
+		t.Errorf("UpdateList failed: %v", err)
+	}
+	val, err = raph.GetList("key")
+	if err != nil {
+		t.Errorf("GetList failed: %v", err)
+	}
+	if strings.Join(val, "/") != strings.Join([]string{"value", "5"}, "/") {
+		t.Error("List not equal, got: %v, expected: %v", val, []string{"value", "5"})
+	}
+
 	valStr, err := raph.GetListItem("key", 1)
 	if err != nil {
 		t.Errorf("GetListItem failed: %v", err)
 	}
-	if valStr != "3" {
-		t.Errorf("GetListItem failed, got: %s, expected: %s", valStr, "3")
+	if valStr != "5" {
+		t.Errorf("GetListItem failed, got: %s, expected: %s", valStr, "5")
 	}
 }

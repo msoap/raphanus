@@ -2,6 +2,19 @@ package raphanus
 
 import "testing"
 
+func Test_UpdateInt(t *testing.T) {
+	raph := New()
+
+	raph.SetInt("key", 7, 0)
+	if err := raph.UpdateInt("key", 8); err != nil {
+		t.Errorf("UpdateInt got error: %v", err)
+	}
+
+	if v, err := raph.GetInt("key"); err != nil || v != 8 {
+		t.Error("UpdateInt failed")
+	}
+}
+
 func Test_IncrInt(t *testing.T) {
 	raph := New()
 
