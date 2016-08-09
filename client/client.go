@@ -140,9 +140,13 @@ func (cli Client) GetInt(key string) (int64, error) {
 }
 
 // SetInt - set int value by key
-func (cli Client) SetInt(key string, value int64) (err error) {
+func (cli Client) SetInt(key string, value int64, ttl int) (err error) {
+	ttlParam := ""
+	if ttl > 0 {
+		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
+	}
 	postData := []byte(strconv.FormatInt(value, 10))
-	body, err := httpPost(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key), postData)
+	body, err := httpPost(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key)+ttlParam, postData)
 	if err != nil {
 		return err
 	}
@@ -233,8 +237,12 @@ func (cli Client) GetStr(key string) (string, error) {
 }
 
 // SetStr - set string value by key
-func (cli Client) SetStr(key string, value string) (err error) {
-	body, err := httpPost(defaultAddress+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
+func (cli Client) SetStr(key string, value string, ttl int) (err error) {
+	ttlParam := ""
+	if ttl > 0 {
+		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
+	}
+	body, err := httpPost(defaultAddress+APIVersion+"/str/"+url.QueryEscape(key)+ttlParam, []byte(value))
 	if err != nil {
 		return err
 	}

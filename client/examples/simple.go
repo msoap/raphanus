@@ -10,8 +10,8 @@ import (
 func main() {
 	raph := raphanusclient.New()
 
-	saveIntKey(raph, "k1", 123)
-	saveIntKey(raph, "k2", 777)
+	saveIntKey(raph, "k1", 123, 0)
+	saveIntKey(raph, "k2", 777, 10)
 	incrDecrIntKey(raph, "k2")
 	printIntKey(raph, "k1")
 	updateIntKey(raph, "k1", 321)
@@ -44,8 +44,8 @@ func printLength(raph raphanusclient.Client) {
 	fmt.Printf("Count of keys: %d\n", length)
 }
 
-func saveIntKey(raph raphanusclient.Client, key string, value int64) {
-	err := raph.SetInt(key, value)
+func saveIntKey(raph raphanusclient.Client, key string, value int64, ttl int) {
+	err := raph.SetInt(key, value, ttl)
 	if err != nil {
 		fmt.Printf("SetInt got error: %s\n", err)
 		return
@@ -109,7 +109,7 @@ func printStrKey(raph raphanusclient.Client, key string) {
 }
 
 func testStringValues(raph raphanusclient.Client, key string) {
-	if err := raph.SetStr(key, "str val 1"); err != nil {
+	if err := raph.SetStr(key, "str val 1", 0); err != nil {
 		fmt.Printf("SetStr got error: %s\n", err)
 		return
 	}
