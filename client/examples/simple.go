@@ -11,6 +11,7 @@ import (
 func main() {
 	raph := raphanusclient.New()
 	printKeys(raph)
+	removeKey(raph, "k1")
 }
 
 func printKeys(raph raphanusclient.Client) {
@@ -20,4 +21,13 @@ func printKeys(raph raphanusclient.Client) {
 	}
 
 	fmt.Printf("all keys: %s\n", strings.Join(allKeys, ", "))
+}
+
+func removeKey(raph raphanusclient.Client, key string) {
+	err := raph.Remove(key)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Key %s removed\n", key)
 }
