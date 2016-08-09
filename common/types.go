@@ -11,3 +11,9 @@ type OutputKeys struct {
 	OutputCommon
 	Keys []string `json:"keys"`
 }
+
+// OutputLength - output for /length
+type OutputLength struct {
+	OutputCommon
+	Length int `json:"length"`
+}

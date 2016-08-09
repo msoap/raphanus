@@ -11,6 +11,7 @@ import (
 func main() {
 	raph := raphanusclient.New()
 	printKeys(raph)
+	printLength(raph)
 	removeKey(raph, "k1")
 }
 
@@ -23,10 +24,20 @@ func printKeys(raph raphanusclient.Client) {
 	fmt.Printf("all keys: %s\n", strings.Join(allKeys, ", "))
 }
 
+func printLength(raph raphanusclient.Client) {
+	length, err := raph.Length()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Count of keys: %d\n", length)
+}
+
 func removeKey(raph raphanusclient.Client, key string) {
 	err := raph.Remove(key)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Remove got error: %s\n", err)
+		return
 	}
 
 	fmt.Printf("Key %s removed\n", key)

@@ -68,7 +68,7 @@ func (cli Client) Keys() (result []string, err error) {
 }
 
 // Remove - remove key from cache
-func (cli Client) Remove(key string) (err error) {
+func (cli Client) Remove(key string) error {
 	body, err := httpDelete(defaultAddress + APIVersion + "/remove/" + url.QueryEscape(key))
 	if err != nil {
 		return err
@@ -81,4 +81,26 @@ func (cli Client) Remove(key string) (err error) {
 	}()
 
 	return checkCommonError(body)
+}
+
+// Length - get count of keys
+func (cli Client) Length() (int, error) {
+	body, err := httpGet(defaultAddress + APIVersion + "/length")
+	if err != nil {
+		return 0, err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputLength{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return 0, err
+	}
+
+	return resultRaw.Length, err
 }
