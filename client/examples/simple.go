@@ -9,10 +9,16 @@ import (
 
 func main() {
 	raph := raphanusclient.New()
+
+	saveIntKey(raph, "k1", 123)
+	saveIntKey(raph, "k2", 777)
+	printIntKey(raph, "k1")
+	updateIntKey(raph, "k1", 321)
+	printIntKey(raph, "k1")
+
 	printKeys(raph)
 	printLength(raph)
-	saveIntKey(raph, "k1", 123)
-	printIntKey(raph, "k1")
+
 	removeKey(raph, "k1")
 }
 
@@ -44,6 +50,16 @@ func saveIntKey(raph raphanusclient.Client, key string, value int64) {
 	}
 
 	fmt.Printf("Int value (%s: %d) saved\n", key, value)
+}
+
+func updateIntKey(raph raphanusclient.Client, key string, value int64) {
+	err := raph.UpdateInt(key, value)
+	if err != nil {
+		fmt.Printf("UpdateInt got error: %s\n", err)
+		return
+	}
+
+	fmt.Printf("Int value (%s: %d) updated\n", key, value)
 }
 
 func removeKey(raph raphanusclient.Client, key string) {

@@ -153,3 +153,20 @@ func (cli Client) SetInt(key string, value int64) error {
 
 	return checkCommonError(body)
 }
+
+// UpdateInt - update int value by key
+func (cli Client) UpdateInt(key string, value int64) error {
+	postData := []byte(strconv.FormatInt(value, 10))
+	body, err := httpPut(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key), postData)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
