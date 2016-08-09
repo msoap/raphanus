@@ -1,6 +1,10 @@
 package raphanus
 
-import "time"
+import (
+	"time"
+
+	"github.com/msoap/raphanus/common"
+)
 
 // GetInt - get integer value by key
 func (db *DB) GetInt(key string) (int64, error) {
@@ -11,12 +15,12 @@ func (db *DB) GetInt(key string) (int64, error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return 0, ErrKeyNotExists
+		return 0, raphanuscommon.ErrKeyNotExists
 	}
 
 	value, ok := rawVal.val.(int64)
 	if !ok {
-		return 0, ErrKeyTypeMissmatch
+		return 0, raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	return value, nil
@@ -51,7 +55,7 @@ func (db *DB) UpdateInt(key string, value int64) (err error) {
 
 	_, ok := db.data[key]
 	if !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	item := db.data[key]
@@ -86,12 +90,12 @@ func (db *DB) DecrInt(key string) (err error) {
 func (db *DB) addInt(key string, value int64) (err error) {
 	_, ok := db.data[key]
 	if !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	_, ok = db.data[key].val.(int64)
 	if !ok {
-		return ErrKeyTypeMissmatch
+		return raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	item := db.data[key]

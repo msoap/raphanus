@@ -4,6 +4,8 @@ import (
 	"sort"
 	"strings"
 	"testing"
+
+	"github.com/msoap/raphanus/common"
 )
 
 func Test_coreSimple01(t *testing.T) {
@@ -11,7 +13,7 @@ func Test_coreSimple01(t *testing.T) {
 
 	raph.SetStr("key", "value", 0)
 	vStr, err := raph.GetStr("key")
-	if err == ErrKeyNotExists {
+	if err == raphanuscommon.ErrKeyNotExists {
 		t.Error("Got ErrKeyNotExists error")
 	}
 
@@ -21,7 +23,7 @@ func Test_coreSimple01(t *testing.T) {
 
 	raph.SetInt("key01", 7, 0)
 	vInt, err := raph.GetInt("key01")
-	if err == ErrKeyNotExists {
+	if err == raphanuscommon.ErrKeyNotExists {
 		t.Error("Got ErrKeyNotExists error")
 	}
 

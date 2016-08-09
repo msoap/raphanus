@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/msoap/raphanus/common"
 )
 
 func Test_ListMethods01(t *testing.T) {
@@ -21,7 +23,7 @@ func Test_ListMethods01(t *testing.T) {
 
 	time.Sleep(time.Second + 100*time.Millisecond)
 	_, err = raph.GetList("key")
-	if err != ErrKeyNotExists {
+	if err != raphanuscommon.ErrKeyNotExists {
 		t.Error("TTL dont work")
 	}
 }

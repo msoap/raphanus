@@ -1,5 +1,7 @@
 package raphanus
 
+import "github.com/msoap/raphanus/common"
+
 // DictValue - dict value type
 type DictValue map[string]string
 
@@ -12,12 +14,12 @@ func (db *DB) GetDict(key string) (value DictValue, err error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return value, ErrKeyNotExists
+		return value, raphanuscommon.ErrKeyNotExists
 	}
 
 	value, ok = rawVal.val.(DictValue)
 	if !ok {
-		return value, ErrKeyTypeMissmatch
+		return value, raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	return value, nil
@@ -47,7 +49,7 @@ func (db *DB) UpdateDict(key string, value DictValue) (err error) {
 	}
 
 	if _, ok := db.data[key]; !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	item := db.data[key]
@@ -105,21 +107,21 @@ func (db *DB) RemoveDictItem(key, dictKey string) error {
 
 func (db *DB) validateDictParams(key, dictKey string) error {
 	if len(key) == 0 || len(dictKey) == 0 {
-		return ErrDictKeyIsEmpty
+		return raphanuscommon.ErrDictKeyIsEmpty
 	}
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	value, ok := rawVal.val.(DictValue)
 	if !ok {
-		return ErrKeyTypeMissmatch
+		return raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	if _, ok := value[dictKey]; !ok {
-		return ErrDictKeyNotExists
+		return raphanuscommon.ErrDictKeyNotExists
 	}
 
 	return nil

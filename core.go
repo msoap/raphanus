@@ -4,19 +4,10 @@ Package raphanus - simple implementation of Redis-like in-memory cache
 package raphanus
 
 import (
-	"errors"
 	"sync"
 	"time"
-)
 
-// Common errors
-var (
-	ErrKeyNotExists     = errors.New("Key not exists")
-	ErrKeyTypeMissmatch = errors.New("The type does not match")
-	ErrListOutOfRange   = errors.New("List index is out of range")
-	ErrDictKeyNotExists = errors.New("Dict, key not exists")
-	ErrDictKeyIsEmpty   = errors.New("Key or dict key is empty")
-	ErrTTLIsntCorrect   = errors.New("TTL parameter isn't correct")
+	"github.com/msoap/raphanus/common"
 )
 
 type value struct {
@@ -67,7 +58,7 @@ func (db *DB) Remove(key string) (err error) {
 
 	_, ok := db.data[key]
 	if !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	delete(db.data, key)

@@ -3,6 +3,8 @@ package raphanus
 import (
 	"reflect"
 	"testing"
+
+	"github.com/msoap/raphanus/common"
 )
 
 func Test_DictMethods01(t *testing.T) {
@@ -63,7 +65,7 @@ func Test_DictMethods02(t *testing.T) {
 		t.Errorf("RemoveDictItem failed: %v", err)
 	}
 	_, err = raph.GetDictItem("key", "k1")
-	if err != ErrDictKeyNotExists {
+	if err != raphanuscommon.ErrDictKeyNotExists {
 		t.Errorf("Not error after RemoveDictItem: %v", err)
 	}
 }

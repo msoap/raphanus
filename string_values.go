@@ -1,5 +1,7 @@
 package raphanus
 
+import "github.com/msoap/raphanus/common"
+
 // GetStr - get string value by key
 func (db *DB) GetStr(key string) (string, error) {
 	if db.withLock {
@@ -9,12 +11,12 @@ func (db *DB) GetStr(key string) (string, error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return "", ErrKeyNotExists
+		return "", raphanuscommon.ErrKeyNotExists
 	}
 
 	value, ok := rawVal.val.(string)
 	if !ok {
-		return "", ErrKeyTypeMissmatch
+		return "", raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	return value, nil
@@ -44,7 +46,7 @@ func (db *DB) UpdateStr(key, value string) (err error) {
 	}
 
 	if _, ok := db.data[key]; !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	item := db.data[key]

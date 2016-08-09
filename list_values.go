@@ -1,5 +1,7 @@
 package raphanus
 
+import "github.com/msoap/raphanus/common"
+
 // ListValue - list value type
 type ListValue []string
 
@@ -12,12 +14,12 @@ func (db *DB) GetList(key string) (value ListValue, err error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return value, ErrKeyNotExists
+		return value, raphanuscommon.ErrKeyNotExists
 	}
 
 	value, ok = rawVal.val.(ListValue)
 	if !ok {
-		return value, ErrKeyTypeMissmatch
+		return value, raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	return value, err
@@ -47,7 +49,7 @@ func (db *DB) UpdateList(key string, value ListValue) (err error) {
 	}
 
 	if _, ok := db.data[key]; !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	item := db.data[key]
@@ -66,16 +68,16 @@ func (db *DB) GetListItem(key string, index int) (string, error) {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return "", ErrKeyNotExists
+		return "", raphanuscommon.ErrKeyNotExists
 	}
 
 	valueList, ok := rawVal.val.(ListValue)
 	if !ok {
-		return "", ErrKeyTypeMissmatch
+		return "", raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	if index < 0 || index >= len(valueList) {
-		return "", ErrListOutOfRange
+		return "", raphanuscommon.ErrListOutOfRange
 	}
 
 	result := valueList[index]
@@ -91,16 +93,16 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 
 	rawVal, ok := db.data[key]
 	if !ok {
-		return ErrKeyNotExists
+		return raphanuscommon.ErrKeyNotExists
 	}
 
 	valueList, ok := rawVal.val.(ListValue)
 	if !ok {
-		return ErrKeyTypeMissmatch
+		return raphanuscommon.ErrKeyTypeMissmatch
 	}
 
 	if index < 0 || index >= len(valueList) {
-		return ErrListOutOfRange
+		return raphanuscommon.ErrListOutOfRange
 	}
 
 	db.data[key].val.(ListValue)[index] = value
