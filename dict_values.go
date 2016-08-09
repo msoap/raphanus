@@ -24,7 +24,7 @@ func (db *DB) GetDict(key string) (value DictValue, err error) {
 }
 
 // SetDict - create/update dict value by key
-func (db *DB) SetDict(key string, value DictValue) {
+func (db *DB) SetDict(key string, value DictValue, ttl int) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -33,6 +33,8 @@ func (db *DB) SetDict(key string, value DictValue) {
 	item := db.data[key]
 	item.val = value
 	db.data[key] = item
+
+	db.setTTL(key, ttl)
 
 	return
 }

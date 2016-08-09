@@ -21,7 +21,7 @@ func (db *DB) GetStr(key string) (string, error) {
 }
 
 // SetStr - create/update string value by key
-func (db *DB) SetStr(key, value string) {
+func (db *DB) SetStr(key, value string, ttl int) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -30,6 +30,8 @@ func (db *DB) SetStr(key, value string) {
 	item := db.data[key]
 	item.val = value
 	db.data[key] = item
+
+	db.setTTL(key, ttl)
 
 	return
 }

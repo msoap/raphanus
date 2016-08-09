@@ -9,7 +9,7 @@ import (
 func Test_coreSimple01(t *testing.T) {
 	raph := New()
 
-	raph.SetStr("key", "value")
+	raph.SetStr("key", "value", 0)
 	vStr, err := raph.GetStr("key")
 	if err == ErrKeyNotExists {
 		t.Error("Got ErrKeyNotExists error")
@@ -19,7 +19,7 @@ func Test_coreSimple01(t *testing.T) {
 		t.Errorf("GetStr:\ngot:      %s\nexpected: %s", vStr, "value")
 	}
 
-	raph.SetInt("key01", 7)
+	raph.SetInt("key01", 7, 0)
 	vInt, err := raph.GetInt("key01")
 	if err == ErrKeyNotExists {
 		t.Error("Got ErrKeyNotExists error")

@@ -19,6 +19,24 @@ type outputCommon struct {
 // allocate result for success calls
 var outputCommonOK = outputCommon{}
 
+func getTTL(ctx echo.Context) (ttl int, err error) {
+	ttlStr := ctx.QueryParam("ttl")
+	if len(ttlStr) == 0 {
+		return 0, nil
+	}
+
+	ttl, err = strconv.Atoi(ttlStr)
+	if err != nil {
+		return 0, err
+	}
+
+	if ttl < 0 {
+		return 0, raphanus.ErrTTLIsntCorrect
+	}
+
+	return ttl, nil
+}
+
 /*
 handlerKeys - get all keys
 
@@ -97,7 +115,7 @@ func (app *server) getInt(ctx echo.Context) error {
 /*
 setInt - set one integer value by key
 
-curl -s -X POST -d 123 http://localhost:8771/v1/int/k1
+curl -s -X POST -d 123 'http://localhost:8771/v1/int/k1?ttl=60'
 result:
 	{"error_code":0}
 */
@@ -107,8 +125,13 @@ func (app *server) setInt(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
+	ttl, err := getTTL(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
 	key := ctx.Param("key")
-	app.raphanus.SetInt(key, newIntValue)
+	app.raphanus.SetInt(key, newIntValue, ttl)
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
@@ -244,7 +267,7 @@ func (app *server) getStr(ctx echo.Context) error {
 /*
 setStr - set one string value by key
 
-curl -s -X POST -d "string value" http://localhost:8771/v1/str/k1
+curl -s -X POST -d "string value" 'http://localhost:8771/v1/str/k1?ttl=60'
 result:
 	{"error_code":0}
 */
@@ -254,8 +277,13 @@ func (app *server) setStr(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
+	ttl, err := getTTL(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
 	key := ctx.Param("key")
-	app.raphanus.SetStr(key, newStrValue)
+	app.raphanus.SetStr(key, newStrValue, ttl)
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
@@ -320,7 +348,7 @@ func (app *server) getList(ctx echo.Context) error {
 /*
 setList - set one list value by key
 
-curl -s -X POST -H 'Content-Type: application/json' -d '["l1", "l2", "l3"]' http://localhost:8771/v1/list/k1
+curl -s -X POST -H 'Content-Type: application/json' -d '["l1", "l2", "l3"]' 'http://localhost:8771/v1/list/k1?ttl=60'
 result:
 	{"error_code":0}
 */
@@ -330,8 +358,13 @@ func (app *server) setList(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
+	ttl, err := getTTL(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
 	key := ctx.Param("key")
-	app.raphanus.SetList(key, newListValue)
+	app.raphanus.SetList(key, newListValue, ttl)
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
@@ -433,7 +466,7 @@ func (app *server) getDict(ctx echo.Context) error {
 /*
 setDict - set one dict value by key
 
-curl -s -X POST -H 'Content-Type: application/json' -d '{"dk1": "v1", "dk2": "v2"}' http://localhost:8771/v1/dict/k1
+curl -s -X POST -H 'Content-Type: application/json' -d '{"dk1": "v1", "dk2": "v2"}' 'http://localhost:8771/v1/dict/k1?ttl=60'
 result:
 	{"error_code":0}
 */
@@ -443,8 +476,13 @@ func (app *server) setDict(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
+	ttl, err := getTTL(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
 	key := ctx.Param("key")
-	app.raphanus.SetDict(key, newDictValue)
+	app.raphanus.SetDict(key, newDictValue, ttl)
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }

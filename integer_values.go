@@ -1,5 +1,7 @@
 package raphanus
 
+import "time"
+
 // GetInt - get integer value by key
 func (db *DB) GetInt(key string) (int64, error) {
 	if db.withLock {
@@ -21,7 +23,7 @@ func (db *DB) GetInt(key string) (int64, error) {
 }
 
 // SetInt - create/update integer value by key
-func (db *DB) SetInt(key string, value int64) {
+func (db *DB) SetInt(key string, value int64, ttl int) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -29,6 +31,12 @@ func (db *DB) SetInt(key string, value int64) {
 
 	item := db.data[key]
 	item.val = value
+
+	db.setTTL(key, ttl)
+	if ttl > 0 {
+		item.ttl = time.Now().Add(time.Duration(ttl) * time.Second)
+	}
+
 	db.data[key] = item
 
 	return

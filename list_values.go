@@ -24,7 +24,7 @@ func (db *DB) GetList(key string) (value ListValue, err error) {
 }
 
 // SetList - create/update list value by key
-func (db *DB) SetList(key string, value ListValue) {
+func (db *DB) SetList(key string, value ListValue, ttl int) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -33,6 +33,8 @@ func (db *DB) SetList(key string, value ListValue) {
 	item := db.data[key]
 	item.val = value
 	db.data[key] = item
+
+	db.setTTL(key, ttl)
 
 	return
 }

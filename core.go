@@ -19,6 +19,7 @@ var (
 	ErrListOutOfRange   = errors.New("List index is out of range")
 	ErrDictKeyNotExists = errors.New("Dict, key not exists")
 	ErrDictKeyIsEmpty   = errors.New("Key or dict key is empty")
+	ErrTTLIsntCorrect   = errors.New("TTL parameter isn't correct")
 )
 
 type value struct {
@@ -94,4 +95,17 @@ func (db *DB) Keys() []string {
 // Len - return length of cache
 func (db *DB) Len() int {
 	return len(db.data)
+}
+
+// setTTL - set TTL on one value in DB
+func (db *DB) setTTL(key string, ttl int) {
+	if ttl > 0 {
+		go func() {
+			time.Sleep(time.Duration(ttl) * time.Second)
+			db.Lock()
+			defer db.Unlock()
+
+			delete(db.data, key)
+		}()
+	}
 }
