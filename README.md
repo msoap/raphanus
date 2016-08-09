@@ -31,13 +31,14 @@ as Docker container:
 ```Go
 import (
     "github.com/msoap/raphanus"
+    "github.com/msoap/raphanus/common"
 )
 
 func main() {
     raph := raphanus.New()
     raph.SetStr("key", "value")
     v, err := raph.GetStr("key")
-    if err == raphanus.ErrKeyNotExists {
+    if err == raphanuscommon.ErrKeyNotExists {
         ...
     }
 
@@ -46,7 +47,7 @@ func main() {
         if err != nil {
             return
         }
-        raph.SetStr("k1", v + " updated")
+        raph.SetStr("k1", v + " updated", 0)
     })
 
     multiKeys := []string{"k1", "k2"}
@@ -68,15 +69,17 @@ func main() {
 
 ```Go
 import (
-    raphanusclient "github.com/msoap/raphanus/client"
+    "github.com/msoap/raphanus/client"
+    "github.com/msoap/raphanus/common"
 )
 
 func main() {
     raph := raphanusclient.New()
-    raph := raphanusclient.NewWithAddr("http://localhost:8770")
-    raph.SetStr("key", "value")
+    // or with config:
+    // raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
+    raph.SetStr("key", "value", 3600)
     v, err := raph.GetStr("key")
-    if err == raphanus.ErrKeyNotExists {
+    if err == raphanuscommon.ErrKeyNotExists {
         ...
     }
 }

@@ -8,7 +8,9 @@ import (
 )
 
 func main() {
-	raph := raphanusclient.New()
+	raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
+	// or with default address:
+	// raph := raphanusclient.New()
 
 	saveIntKey(raph, "k1", 123, 0)
 	saveIntKey(raph, "k2", 777, 10)

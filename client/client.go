@@ -22,10 +22,20 @@ type Client struct {
 	address string
 }
 
+// Cfg - config for New()
+type Cfg struct {
+	Address string
+}
+
 // New - get new client
-func New() Client {
+func New(configs ...Cfg) Client {
+	address := defaultAddress
+	if len(configs) == 1 {
+		address = configs[0].Address
+	}
+
 	return Client{
-		address: defaultAddress,
+		address: address,
 	}
 }
 
@@ -48,7 +58,7 @@ func checkCommonError(body io.Reader) error {
 
 // Keys - get all keys from cache (response may be too large)
 func (cli Client) Keys() (result []string, err error) {
-	body, err := httpGet(defaultAddress + APIVersion + "/keys")
+	body, err := httpGet(cli.address + APIVersion + "/keys")
 	if err != nil {
 		return result, err
 	}
@@ -73,7 +83,7 @@ func (cli Client) Keys() (result []string, err error) {
 
 // Remove - remove key from cache
 func (cli Client) Remove(key string) (err error) {
-	body, err := httpDelete(defaultAddress + APIVersion + "/remove/" + url.QueryEscape(key))
+	body, err := httpDelete(cli.address + APIVersion + "/remove/" + url.QueryEscape(key))
 	if err != nil {
 		return err
 	}
@@ -89,7 +99,7 @@ func (cli Client) Remove(key string) (err error) {
 
 // Length - get count of keys
 func (cli Client) Length() (int, error) {
-	body, err := httpGet(defaultAddress + APIVersion + "/length")
+	body, err := httpGet(cli.address + APIVersion + "/length")
 	if err != nil {
 		return 0, err
 	}
@@ -116,7 +126,7 @@ func (cli Client) Length() (int, error) {
 
 // GetInt - get int value by key
 func (cli Client) GetInt(key string) (int64, error) {
-	body, err := httpGet(defaultAddress + APIVersion + "/int/" + url.QueryEscape(key))
+	body, err := httpGet(cli.address + APIVersion + "/int/" + url.QueryEscape(key))
 	if err != nil {
 		return 0, err
 	}
@@ -146,7 +156,7 @@ func (cli Client) SetInt(key string, value int64, ttl int) (err error) {
 		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
 	}
 	postData := []byte(strconv.FormatInt(value, 10))
-	body, err := httpPost(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key)+ttlParam, postData)
+	body, err := httpPost(cli.address+APIVersion+"/int/"+url.QueryEscape(key)+ttlParam, postData)
 	if err != nil {
 		return err
 	}
@@ -163,7 +173,7 @@ func (cli Client) SetInt(key string, value int64, ttl int) (err error) {
 // UpdateInt - update int value by key
 func (cli Client) UpdateInt(key string, value int64) (err error) {
 	postData := []byte(strconv.FormatInt(value, 10))
-	body, err := httpPut(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key), postData)
+	body, err := httpPut(cli.address+APIVersion+"/int/"+url.QueryEscape(key), postData)
 	if err != nil {
 		return err
 	}
@@ -179,7 +189,7 @@ func (cli Client) UpdateInt(key string, value int64) (err error) {
 
 // IncrInt - increment int value by key
 func (cli Client) IncrInt(key string) (err error) {
-	body, err := httpPost(defaultAddress+APIVersion+"/int/incr/"+url.QueryEscape(key), nil)
+	body, err := httpPost(cli.address+APIVersion+"/int/incr/"+url.QueryEscape(key), nil)
 	if err != nil {
 		return err
 	}
@@ -195,7 +205,7 @@ func (cli Client) IncrInt(key string) (err error) {
 
 // DecrInt - decrement int value by key
 func (cli Client) DecrInt(key string) (err error) {
-	body, err := httpPost(defaultAddress+APIVersion+"/int/decr/"+url.QueryEscape(key), nil)
+	body, err := httpPost(cli.address+APIVersion+"/int/decr/"+url.QueryEscape(key), nil)
 	if err != nil {
 		return err
 	}
@@ -213,7 +223,7 @@ func (cli Client) DecrInt(key string) (err error) {
 
 // GetStr - get string value by key
 func (cli Client) GetStr(key string) (string, error) {
-	body, err := httpGet(defaultAddress + APIVersion + "/str/" + url.QueryEscape(key))
+	body, err := httpGet(cli.address + APIVersion + "/str/" + url.QueryEscape(key))
 	if err != nil {
 		return "", err
 	}
@@ -242,7 +252,7 @@ func (cli Client) SetStr(key string, value string, ttl int) (err error) {
 	if ttl > 0 {
 		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
 	}
-	body, err := httpPost(defaultAddress+APIVersion+"/str/"+url.QueryEscape(key)+ttlParam, []byte(value))
+	body, err := httpPost(cli.address+APIVersion+"/str/"+url.QueryEscape(key)+ttlParam, []byte(value))
 	if err != nil {
 		return err
 	}
@@ -258,7 +268,7 @@ func (cli Client) SetStr(key string, value string, ttl int) (err error) {
 
 // UpdateStr - update string value by key
 func (cli Client) UpdateStr(key string, value string) (err error) {
-	body, err := httpPut(defaultAddress+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
+	body, err := httpPut(cli.address+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
 	if err != nil {
 		return err
 	}
