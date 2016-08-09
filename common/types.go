@@ -17,3 +17,9 @@ type OutputLength struct {
 	OutputCommon
 	Length int `json:"length"`
 }
+
+// OutputGetInt - output for /int/:key
+type OutputGetInt struct {
+	OutputCommon
+	ValueInt int64 `json:"value_int"`
+}

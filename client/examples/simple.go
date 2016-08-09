@@ -12,6 +12,7 @@ func main() {
 	raph := raphanusclient.New()
 	printKeys(raph)
 	printLength(raph)
+	printIntKey(raph, "k1")
 	removeKey(raph, "k1")
 }
 
@@ -41,4 +42,14 @@ func removeKey(raph raphanusclient.Client, key string) {
 	}
 
 	fmt.Printf("Key %s removed\n", key)
+}
+
+func printIntKey(raph raphanusclient.Client, key string) {
+	intVal, err := raph.GetInt(key)
+	if err != nil {
+		fmt.Printf("GetInt got error: %s\n", err)
+		return
+	}
+
+	fmt.Printf("Key %s, integer value: %d\n", key, intVal)
 }

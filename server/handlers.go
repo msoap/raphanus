@@ -88,11 +88,6 @@ func (app *server) handlerLength(ctx echo.Context) error {
 
 // Integer methods ------------------------------
 
-type outputGetInt struct {
-	raphanuscommon.OutputCommon
-	ValueInt int64 `json:"value_int"`
-}
-
 /*
 getInt - get one integer value by key
 
@@ -107,7 +102,7 @@ func (app *server) getInt(ctx echo.Context) error {
 		return getJSONError(ctx, err)
 	}
 
-	result := outputGetInt{ValueInt: valueInt}
+	result := raphanuscommon.OutputGetInt{ValueInt: valueInt}
 	return ctx.JSON(http.StatusOK, result)
 }
 
@@ -185,7 +180,7 @@ func (app *server) incrInt(ctx echo.Context) error {
 		return getJSONError(ctx, err)
 	}
 
-	result := outputGetInt{ValueInt: valueInt}
+	result := raphanuscommon.OutputGetInt{ValueInt: valueInt}
 	return ctx.JSON(http.StatusOK, result)
 }
 
@@ -218,7 +213,7 @@ func (app *server) decrInt(ctx echo.Context) error {
 		return getJSONError(ctx, err)
 	}
 
-	result := outputGetInt{ValueInt: valueInt}
+	result := raphanuscommon.OutputGetInt{ValueInt: valueInt}
 	return ctx.JSON(http.StatusOK, result)
 }
 

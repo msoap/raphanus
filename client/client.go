@@ -63,6 +63,9 @@ func (cli Client) Keys() (result []string, err error) {
 	if err != nil {
 		return result, err
 	}
+	if resultRaw.ErrorCode != 0 {
+		return result, fmt.Errorf(resultRaw.ErrorMessage)
+	}
 
 	return resultRaw.Keys, err
 }
@@ -101,6 +104,34 @@ func (cli Client) Length() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	if resultRaw.ErrorCode != 0 {
+		return 0, fmt.Errorf(resultRaw.ErrorMessage)
+	}
 
 	return resultRaw.Length, err
+}
+
+// GetInt - get int value by key
+func (cli Client) GetInt(key string) (int64, error) {
+	body, err := httpGet(defaultAddress + APIVersion + "/int/" + url.QueryEscape(key))
+	if err != nil {
+		return 0, err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputGetInt{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return 0, err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return 0, fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.ValueInt, err
 }
