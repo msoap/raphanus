@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/msoap/raphanus/client"
@@ -12,6 +11,7 @@ func main() {
 	raph := raphanusclient.New()
 	printKeys(raph)
 	printLength(raph)
+	saveIntKey(raph, "k1", 123)
 	printIntKey(raph, "k1")
 	removeKey(raph, "k1")
 }
@@ -19,7 +19,8 @@ func main() {
 func printKeys(raph raphanusclient.Client) {
 	allKeys, err := raph.Keys()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Keys got error: %s\n", err)
+		return
 	}
 
 	fmt.Printf("all keys: %s\n", strings.Join(allKeys, ", "))
@@ -28,10 +29,21 @@ func printKeys(raph raphanusclient.Client) {
 func printLength(raph raphanusclient.Client) {
 	length, err := raph.Length()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Printf("Length got error: %s\n", err)
+		return
 	}
 
 	fmt.Printf("Count of keys: %d\n", length)
+}
+
+func saveIntKey(raph raphanusclient.Client, key string, value int64) {
+	err := raph.SetInt(key, value)
+	if err != nil {
+		fmt.Printf("SetInt got error: %s\n", err)
+		return
+	}
+
+	fmt.Printf("Int value (%s: %d) saved\n", key, value)
 }
 
 func removeKey(raph raphanusclient.Client, key string) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"strconv"
 
 	"github.com/msoap/raphanus/common"
 )
@@ -31,7 +32,7 @@ func New() Client {
 // checkCommonError - check and parse common error from server:
 // {"error_code": 0}
 // {"error_code":1, "error_message": "..."}
-func checkCommonError(body io.ReadCloser) error {
+func checkCommonError(body io.Reader) error {
 	resultRaw := raphanuscommon.OutputCommon{}
 	err := json.NewDecoder(body).Decode(&resultRaw)
 	if err != nil {
@@ -134,4 +135,21 @@ func (cli Client) GetInt(key string) (int64, error) {
 	}
 
 	return resultRaw.ValueInt, err
+}
+
+// SetInt - set int value by key
+func (cli Client) SetInt(key string, value int64) error {
+	postData := []byte(strconv.FormatInt(value, 10))
+	body, err := httpPost(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key), postData)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
 }
