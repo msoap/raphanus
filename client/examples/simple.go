@@ -12,6 +12,7 @@ func main() {
 
 	saveIntKey(raph, "k1", 123)
 	saveIntKey(raph, "k2", 777)
+	incrDecrIntKey(raph, "k2")
 	printIntKey(raph, "k1")
 	updateIntKey(raph, "k1", 321)
 	printIntKey(raph, "k1")
@@ -80,4 +81,19 @@ func printIntKey(raph raphanusclient.Client, key string) {
 	}
 
 	fmt.Printf("Key %s, integer value: %d\n", key, intVal)
+}
+
+func incrDecrIntKey(raph raphanusclient.Client, key string) {
+
+	if err := raph.IncrInt(key); err != nil {
+		fmt.Printf("IncrInt got error: %s\n", err)
+		return
+	}
+	printIntKey(raph, key)
+
+	if err := raph.DecrInt(key); err != nil {
+		fmt.Printf("DecrInt got error: %s\n", err)
+		return
+	}
+	printIntKey(raph, key)
 }

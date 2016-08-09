@@ -170,3 +170,35 @@ func (cli Client) UpdateInt(key string, value int64) (err error) {
 
 	return checkCommonError(body)
 }
+
+// IncrInt - increment int value by key
+func (cli Client) IncrInt(key string) (err error) {
+	body, err := httpPost(defaultAddress+APIVersion+"/int/incr/"+url.QueryEscape(key), nil)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// DecrInt - decrement int value by key
+func (cli Client) DecrInt(key string) (err error) {
+	body, err := httpPost(defaultAddress+APIVersion+"/int/decr/"+url.QueryEscape(key), nil)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
