@@ -9,9 +9,6 @@ import (
 	"time"
 )
 
-// MaxStringValueLength - string value max length
-const MaxStringValueLength = 1024 * 1024 // 1 MB
-
 // Common errors
 var (
 	ErrKeyNotExists     = errors.New("Key not exists")

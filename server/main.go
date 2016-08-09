@@ -4,13 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/msoap/raphanus/common"
 )
 
 const (
 	version        = "0.1"
-	defaultHost    = "localhost"
-	defaultPort    = "8771"
-	defaultAddress = defaultHost + ":" + defaultPort
+	defaultAddress = raphanuscommon.DefaultHost + ":" + raphanuscommon.DefaultPort
 	usageString    = "raphanus-server [options]\noptions:"
 )
 

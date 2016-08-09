@@ -8,6 +8,7 @@ import (
 
 	"github.com/labstack/echo"
 	"github.com/msoap/raphanus"
+	"github.com/msoap/raphanus/common"
 )
 
 // outputCommon - common part of all responses
@@ -311,7 +312,7 @@ func (app *server) updateStr(ctx echo.Context) error {
 
 // getBodyAsString - get body of request as string
 func getBodyAsString(ctx echo.Context) (string, error) {
-	limitBody := io.LimitReader(ctx.Request().Body(), raphanus.MaxStringValueLength)
+	limitBody := io.LimitReader(ctx.Request().Body(), raphanuscommon.MaxStringValueLength)
 	bytes, err := ioutil.ReadAll(limitBody)
 	if err != nil {
 		return "", err
