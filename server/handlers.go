@@ -487,3 +487,42 @@ func (app *server) getDictItem(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
 }
+
+/*
+setDictItem - set one item in dict value by key and dict key
+
+curl -s -X PUT -d "v30" 'http://localhost:8771/v1/dict/item/k1?dkey=dk1'
+result:
+	{"result": "ok"}
+*/
+func (app *server) setDictItem(ctx echo.Context) error {
+	newStrValue, err := getBodyAsString(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	key := ctx.Param("key")
+	dictKey := ctx.QueryParam("dkey")
+	if err := app.raphanus.SetDictItem(key, dictKey, newStrValue); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
+
+/*
+removeDictItem - remove one item from dict value by key and dict key
+
+curl -s -X DELETE 'http://localhost:8771/v1/dict/item/k1?dkey=dk1'
+result:
+	{"result": "ok"}
+*/
+func (app *server) removeDictItem(ctx echo.Context) error {
+	key := ctx.Param("key")
+	dictKey := ctx.QueryParam("dkey")
+	if err := app.raphanus.RemoveDictItem(key, dictKey); err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputCommonOK)
+}
