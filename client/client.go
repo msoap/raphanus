@@ -72,7 +72,7 @@ func (cli Client) Keys() (result []string, err error) {
 }
 
 // Remove - remove key from cache
-func (cli Client) Remove(key string) error {
+func (cli Client) Remove(key string) (err error) {
 	body, err := httpDelete(defaultAddress + APIVersion + "/remove/" + url.QueryEscape(key))
 	if err != nil {
 		return err
@@ -138,7 +138,7 @@ func (cli Client) GetInt(key string) (int64, error) {
 }
 
 // SetInt - set int value by key
-func (cli Client) SetInt(key string, value int64) error {
+func (cli Client) SetInt(key string, value int64) (err error) {
 	postData := []byte(strconv.FormatInt(value, 10))
 	body, err := httpPost(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key), postData)
 	if err != nil {
@@ -155,7 +155,7 @@ func (cli Client) SetInt(key string, value int64) error {
 }
 
 // UpdateInt - update int value by key
-func (cli Client) UpdateInt(key string, value int64) error {
+func (cli Client) UpdateInt(key string, value int64) (err error) {
 	postData := []byte(strconv.FormatInt(value, 10))
 	body, err := httpPut(defaultAddress+APIVersion+"/int/"+url.QueryEscape(key), postData)
 	if err != nil {
