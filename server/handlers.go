@@ -11,14 +11,8 @@ import (
 	"github.com/msoap/raphanus/common"
 )
 
-// outputCommon - common part of all responses
-type outputCommon struct {
-	ErrorCode    int    `json:"error_code"`
-	ErrorMessage string `json:"error_message,omitempty"`
-}
-
 // allocate result for success calls
-var outputCommonOK = outputCommon{}
+var outputCommonOK = raphanuscommon.OutputCommon{}
 
 func getTTL(ctx echo.Context) (ttl int, err error) {
 	ttlStr := ctx.QueryParam("ttl")
@@ -46,12 +40,7 @@ result:
 	{"error_code":0,"keys":["k1", "k2"]}
 */
 func (app *server) handlerKeys(ctx echo.Context) error {
-	type outputKeys struct {
-		outputCommon
-		Keys []string `json:"keys"`
-	}
-
-	result := outputKeys{Keys: app.raphanus.Keys()}
+	result := raphanuscommon.OutputKeys{Keys: app.raphanus.Keys()}
 	return ctx.JSON(http.StatusOK, result)
 }
 
@@ -66,7 +55,7 @@ func (app *server) handlerRemoveKey(ctx echo.Context) error {
 	key := ctx.Param("key")
 	err := app.raphanus.Remove(key)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -81,7 +70,7 @@ result:
 */
 func (app *server) handlerLength(ctx echo.Context) error {
 	type outputLength struct {
-		outputCommon
+		raphanuscommon.OutputCommon
 		Length int `json:"length"`
 	}
 	len := app.raphanus.Len()
@@ -91,7 +80,7 @@ func (app *server) handlerLength(ctx echo.Context) error {
 // Integer methods ------------------------------
 
 type outputGetInt struct {
-	outputCommon
+	raphanuscommon.OutputCommon
 	ValueInt int64 `json:"value_int"`
 }
 
@@ -106,7 +95,7 @@ func (app *server) getInt(ctx echo.Context) error {
 	key := ctx.Param("key")
 	valueInt, err := app.raphanus.GetInt(key)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	result := outputGetInt{ValueInt: valueInt}
@@ -123,12 +112,12 @@ result:
 func (app *server) setInt(ctx echo.Context) error {
 	newIntValue, err := getBodyAsInt64(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	ttl, err := getTTL(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
@@ -147,12 +136,12 @@ result:
 func (app *server) updateInt(ctx echo.Context) error {
 	newIntValue, err := getBodyAsInt64(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	if err := app.raphanus.UpdateInt(key, newIntValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -184,7 +173,7 @@ func (app *server) incrInt(ctx echo.Context) error {
 	})
 
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	result := outputGetInt{ValueInt: valueInt}
@@ -217,7 +206,7 @@ func (app *server) decrInt(ctx echo.Context) error {
 	})
 
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	result := outputGetInt{ValueInt: valueInt}
@@ -243,7 +232,7 @@ func getBodyAsInt64(ctx echo.Context) (int64, error) {
 // String methods ------------------------------
 
 type outputGetStr struct {
-	outputCommon
+	raphanuscommon.OutputCommon
 	ValueStr string `json:"value_str"`
 }
 
@@ -258,7 +247,7 @@ func (app *server) getStr(ctx echo.Context) error {
 	key := ctx.Param("key")
 	valueStr, err := app.raphanus.GetStr(key)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	result := outputGetStr{ValueStr: valueStr}
@@ -275,12 +264,12 @@ result:
 func (app *server) setStr(ctx echo.Context) error {
 	newStrValue, err := getBodyAsString(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	ttl, err := getTTL(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
@@ -299,12 +288,12 @@ result:
 func (app *server) updateStr(ctx echo.Context) error {
 	newStrValue, err := getBodyAsString(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	if err := app.raphanus.UpdateStr(key, newStrValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -332,14 +321,14 @@ result:
 */
 func (app *server) getList(ctx echo.Context) error {
 	type outputGetList struct {
-		outputCommon
+		raphanuscommon.OutputCommon
 		ValueList []string `json:"value_list"`
 	}
 
 	key := ctx.Param("key")
 	valueList, err := app.raphanus.GetList(key)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	result := outputGetList{ValueList: valueList}
@@ -356,12 +345,12 @@ result:
 func (app *server) setList(ctx echo.Context) error {
 	newListValue := []string{}
 	if err := ctx.Bind(&newListValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	ttl, err := getTTL(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
@@ -380,12 +369,12 @@ result:
 func (app *server) updateList(ctx echo.Context) error {
 	newListValue := []string{}
 	if err := ctx.Bind(&newListValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	if err := app.raphanus.UpdateList(key, newListValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -401,13 +390,13 @@ result:
 func (app *server) getListItem(ctx echo.Context) error {
 	index, err := strconv.Atoi(ctx.QueryParam("idx"))
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	valueStr, err := app.raphanus.GetListItem(key, index)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
@@ -423,17 +412,17 @@ result:
 func (app *server) setListItem(ctx echo.Context) error {
 	index, err := strconv.Atoi(ctx.QueryParam("idx"))
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	newStrValue, err := getBodyAsString(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	if err := app.raphanus.SetListItem(key, index, newStrValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -450,14 +439,14 @@ result:
 */
 func (app *server) getDict(ctx echo.Context) error {
 	type outputGetDict struct {
-		outputCommon
+		raphanuscommon.OutputCommon
 		ValueDict raphanus.DictValue `json:"value_dict"`
 	}
 
 	key := ctx.Param("key")
 	valueDict, err := app.raphanus.GetDict(key)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	result := outputGetDict{ValueDict: valueDict}
@@ -474,12 +463,12 @@ result:
 func (app *server) setDict(ctx echo.Context) error {
 	newDictValue := raphanus.DictValue{}
 	if err := ctx.Bind(&newDictValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	ttl, err := getTTL(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
@@ -498,12 +487,12 @@ result:
 func (app *server) updateDict(ctx echo.Context) error {
 	newDictValue := raphanus.DictValue{}
 	if err := ctx.Bind(&newDictValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	if err := app.raphanus.UpdateDict(key, newDictValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -521,7 +510,7 @@ func (app *server) getDictItem(ctx echo.Context) error {
 	dictKey := ctx.QueryParam("dkey")
 	valueStr, err := app.raphanus.GetDictItem(key, dictKey)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
@@ -537,13 +526,13 @@ result:
 func (app *server) setDictItem(ctx echo.Context) error {
 	newStrValue, err := getBodyAsString(ctx)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	key := ctx.Param("key")
 	dictKey := ctx.QueryParam("dkey")
 	if err := app.raphanus.SetDictItem(key, dictKey, newStrValue); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
@@ -560,7 +549,7 @@ func (app *server) removeDictItem(ctx echo.Context) error {
 	key := ctx.Param("key")
 	dictKey := ctx.QueryParam("dkey")
 	if err := app.raphanus.RemoveDictItem(key, dictKey); err != nil {
-		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+		return ctx.JSON(http.StatusBadRequest, raphanuscommon.OutputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
 	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
