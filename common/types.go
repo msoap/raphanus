@@ -1,5 +1,7 @@
 package raphanuscommon
 
+// JSON types for responses from server
+
 // OutputCommon - common part of all responses
 type OutputCommon struct {
 	ErrorCode    int    `json:"error_code"`
@@ -22,4 +24,10 @@ type OutputLength struct {
 type OutputGetInt struct {
 	OutputCommon
 	ValueInt int64 `json:"value_int"`
+}
+
+// OutputGetStr - output for /str/:key
+type OutputGetStr struct {
+	OutputCommon
+	ValueStr string `json:"value_str"`
 }

@@ -235,11 +235,6 @@ func getBodyAsInt64(ctx echo.Context) (int64, error) {
 
 // String methods ------------------------------
 
-type outputGetStr struct {
-	raphanuscommon.OutputCommon
-	ValueStr string `json:"value_str"`
-}
-
 /*
 getStr - get one string value by key
 
@@ -254,7 +249,7 @@ func (app *server) getStr(ctx echo.Context) error {
 		return getJSONError(ctx, err)
 	}
 
-	result := outputGetStr{ValueStr: valueStr}
+	result := raphanuscommon.OutputGetStr{ValueStr: valueStr}
 	return ctx.JSON(http.StatusOK, result)
 }
 
@@ -403,7 +398,7 @@ func (app *server) getListItem(ctx echo.Context) error {
 		return getJSONError(ctx, err)
 	}
 
-	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
+	return ctx.JSON(http.StatusOK, raphanuscommon.OutputGetStr{ValueStr: valueStr})
 }
 
 /*
@@ -517,7 +512,7 @@ func (app *server) getDictItem(ctx echo.Context) error {
 		return getJSONError(ctx, err)
 	}
 
-	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
+	return ctx.JSON(http.StatusOK, raphanuscommon.OutputGetStr{ValueStr: valueStr})
 }
 
 /*

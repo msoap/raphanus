@@ -112,6 +112,8 @@ func (cli Client) Length() (int, error) {
 	return resultRaw.Length, err
 }
 
+// Integer methods ------------------------------
+
 // GetInt - get int value by key
 func (cli Client) GetInt(key string) (int64, error) {
 	body, err := httpGet(defaultAddress + APIVersion + "/int/" + url.QueryEscape(key))
@@ -190,6 +192,65 @@ func (cli Client) IncrInt(key string) (err error) {
 // DecrInt - decrement int value by key
 func (cli Client) DecrInt(key string) (err error) {
 	body, err := httpPost(defaultAddress+APIVersion+"/int/decr/"+url.QueryEscape(key), nil)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// String methods ------------------------------
+
+// GetStr - get string value by key
+func (cli Client) GetStr(key string) (string, error) {
+	body, err := httpGet(defaultAddress + APIVersion + "/str/" + url.QueryEscape(key))
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputGetStr{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return "", err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return "", fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.ValueStr, err
+}
+
+// SetStr - set string value by key
+func (cli Client) SetStr(key string, value string) (err error) {
+	body, err := httpPost(defaultAddress+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// UpdateStr - update string value by key
+func (cli Client) UpdateStr(key string, value string) (err error) {
+	body, err := httpPut(defaultAddress+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
 	if err != nil {
 		return err
 	}

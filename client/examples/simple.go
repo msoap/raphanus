@@ -17,9 +17,10 @@ func main() {
 	updateIntKey(raph, "k1", 321)
 	printIntKey(raph, "k1")
 
+	testStringValues(raph, "k3")
+
 	printKeys(raph)
 	printLength(raph)
-
 	removeKey(raph, "k1")
 }
 
@@ -84,7 +85,6 @@ func printIntKey(raph raphanusclient.Client, key string) {
 }
 
 func incrDecrIntKey(raph raphanusclient.Client, key string) {
-
 	if err := raph.IncrInt(key); err != nil {
 		fmt.Printf("IncrInt got error: %s\n", err)
 		return
@@ -96,4 +96,28 @@ func incrDecrIntKey(raph raphanusclient.Client, key string) {
 		return
 	}
 	printIntKey(raph, key)
+}
+
+func printStrKey(raph raphanusclient.Client, key string) {
+	strVal, err := raph.GetStr(key)
+	if err != nil {
+		fmt.Printf("GetStr got error: %s\n", err)
+		return
+	}
+
+	fmt.Printf("Key %s, string value: %s\n", key, strVal)
+}
+
+func testStringValues(raph raphanusclient.Client, key string) {
+	if err := raph.SetStr(key, "str val 1"); err != nil {
+		fmt.Printf("SetStr got error: %s\n", err)
+		return
+	}
+	printStrKey(raph, key)
+
+	if err := raph.UpdateStr(key, "str val new"); err != nil {
+		fmt.Printf("SetStr got error: %s\n", err)
+		return
+	}
+	printStrKey(raph, key)
 }
