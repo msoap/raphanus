@@ -14,8 +14,6 @@ From source:
     cd $GOPATH/src/github.com/msoap/raphanus/server && go build -o $GOPATH/bin/raphanus-server
     cd $GOPATH/src/github.com/msoap/raphanus/cli && go build -o $GOPATH/bin/raphanus-cli
 
-Download from github [releases](https://github.com/msoap/raphanus/releases)
-
 From Docker hub:
 
     docker pull msoap/raphanus
