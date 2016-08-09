@@ -102,6 +102,10 @@ func (db *DB) RemoveDictItem(key, dictKey string) error {
 }
 
 func (db *DB) validateDictParams(key, dictKey string) error {
+	if len(key) == 0 || len(dictKey) == 0 {
+		return ErrDictKeyIsEmpty
+	}
+
 	rawVal, ok := db.data[key]
 	if !ok {
 		return ErrKeyNotExists
@@ -112,7 +116,7 @@ func (db *DB) validateDictParams(key, dictKey string) error {
 		return ErrKeyTypeMissmatch
 	}
 
-	if _, ok := value[dictKey]; ok {
+	if _, ok := value[dictKey]; !ok {
 		return ErrDictKeyNotExists
 	}
 

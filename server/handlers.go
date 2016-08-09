@@ -469,3 +469,21 @@ func (app *server) updateDict(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
+
+/*
+getDictItem - get one item from dict value by key and dict key
+
+curl -s 'http://localhost:8771/v1/dict/item/k1?dkey=dk1'
+result:
+	{"result": "ok", "value_str": "l2"}
+*/
+func (app *server) getDictItem(ctx echo.Context) error {
+	key := ctx.Param("key")
+	dictKey := ctx.QueryParam("dkey")
+	valueStr, err := app.raphanus.GetDictItem(key, dictKey)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, outputCommon{ErrorCode: 1, ErrorMessage: err.Error()})
+	}
+
+	return ctx.JSON(http.StatusOK, outputGetStr{ValueStr: valueStr})
+}

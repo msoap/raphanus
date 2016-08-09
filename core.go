@@ -18,6 +18,7 @@ var (
 	ErrKeyTypeMissmatch = errors.New("The type does not match")
 	ErrListOutOfRange   = errors.New("List index is out of range")
 	ErrDictKeyNotExists = errors.New("Dict, key not exists")
+	ErrDictKeyIsEmpty   = errors.New("Key or dict key is empty")
 )
 
 type value struct {

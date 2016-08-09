@@ -54,6 +54,9 @@ func (app *server) run() {
 	v1API.GET("/dict/:key", app.getDict)
 	v1API.POST("/dict/:key", app.setDict)
 	v1API.PUT("/dict/:key", app.updateDict)
+	v1API.GET("/dict/item/:key", app.getDictItem)
+	// v1API.PUT("/dict/item/:key", app.setDictItem)
+	// v1API.DELETE("/dict/item/:key", app.removeDictItem)
 
 	log.Printf("Server run on %s", app.cfg.address)
 	echoServer.Run(standard.New(app.cfg.address))
