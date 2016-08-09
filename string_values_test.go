@@ -15,7 +15,7 @@ func Test_StringMethods(t *testing.T) {
 		t.Errorf("GetStr:\ngot:      %s\nexpected: %s", vStr, "value")
 	}
 
-	vStr, err = raph.GetStr("key_fake")
+	_, err = raph.GetStr("key_fake")
 	if err != ErrKeyNotExists {
 		t.Error("Not got ErrKeyNotExists error")
 	}

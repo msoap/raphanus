@@ -20,7 +20,7 @@ func Test_ListMethods01(t *testing.T) {
 	}
 
 	time.Sleep(time.Second + 100*time.Millisecond)
-	val, err = raph.GetList("key")
+	_, err = raph.GetList("key")
 	if err != ErrKeyNotExists {
 		t.Error("TTL dont work")
 	}
@@ -41,7 +41,7 @@ func Test_ListMethods02(t *testing.T) {
 	}
 
 	if strings.Join(val, "/") != strings.Join([]string{"value", "3"}, "/") {
-		t.Error("List not equal, got: %v, expected: %v", val, []string{"value", "3"})
+		t.Errorf("List not equal, got: %v, expected: %v", val, []string{"value", "3"})
 	}
 
 	err = raph.UpdateList("key", []string{"value", "5"})
@@ -53,7 +53,7 @@ func Test_ListMethods02(t *testing.T) {
 		t.Errorf("GetList failed: %v", err)
 	}
 	if strings.Join(val, "/") != strings.Join([]string{"value", "5"}, "/") {
-		t.Error("List not equal, got: %v, expected: %v", val, []string{"value", "5"})
+		t.Errorf("List not equal, got: %v, expected: %v", val, []string{"value", "5"})
 	}
 
 	valStr, err := raph.GetListItem("key", 1)
