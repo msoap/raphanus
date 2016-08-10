@@ -33,16 +33,17 @@ func getTTL(ctx echo.Context) (ttl int, err error) {
 }
 
 func getJSONError(ctx echo.Context, err error) error {
+	errorCode := 0
 	switch err := err.(type) {
 	case raphanuscommon.RaphError:
-		return ctx.JSON(http.StatusBadRequest,
-			raphanuscommon.OutputCommon{ErrorCode: err.Code, ErrorMessage: err.Error()},
-		)
+		errorCode = err.Code
 	default:
-		return ctx.JSON(http.StatusBadRequest,
-			raphanuscommon.OutputCommon{ErrorCode: raphanuscommon.ErrBadRequest.Code, ErrorMessage: err.Error()},
-		)
+		errorCode = raphanuscommon.ErrBadRequest.Code
 	}
+
+	return ctx.JSON(http.StatusBadRequest,
+		raphanuscommon.OutputCommon{ErrorCode: errorCode, ErrorMessage: err.Error()},
+	)
 }
 
 /*
