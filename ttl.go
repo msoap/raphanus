@@ -1,7 +1,6 @@
 package raphanus
 
 import (
-	"sort"
 	"sync"
 	"time"
 )
@@ -23,12 +22,31 @@ func newTTLQueue() ttlQueue {
 	}
 }
 
-func (ttlQ ttlQueue) Len() int           { return len(ttlQ.queue) }
-func (ttlQ ttlQueue) Swap(i, j int)      { ttlQ.queue[i], ttlQ.queue[j] = ttlQ.queue[j], ttlQ.queue[i] }
-func (ttlQ ttlQueue) Less(i, j int) bool { return ttlQ.queue[i].unixtime > ttlQ.queue[j].unixtime }
-
 func ttl2unixtime(ttl int) int64 {
 	return time.Now().Add(time.Duration(ttl) * time.Second).Unix()
+}
+
+func (ttlQ *ttlQueue) sortSortedListWithNewLastItem() {
+	length := len(ttlQ.queue)
+	if length <= 1 {
+		return
+	}
+
+	lastItem := ttlQ.queue[length-1]
+
+	// TODO: replace "full-scan" with binary search
+	prevIdx := length - 2
+	for prevIdx >= 0 && lastItem.unixtime > ttlQ.queue[prevIdx].unixtime {
+		prevIdx--
+	}
+	if prevIdx == length-2 {
+		return
+	}
+
+	copy(ttlQ.queue[prevIdx+2:length], ttlQ.queue[prevIdx+1:length-1])
+	ttlQ.queue[prevIdx+1] = lastItem
+
+	return
 }
 
 func (ttlQ *ttlQueue) add(item ttlQueueItem) {
@@ -36,8 +54,7 @@ func (ttlQ *ttlQueue) add(item ttlQueueItem) {
 	defer ttlQ.Unlock()
 
 	ttlQ.queue = append(ttlQ.queue, item)
-	// TODO: use custom sort
-	sort.Sort(ttlQ)
+	ttlQ.sortSortedListWithNewLastItem()
 }
 
 func (ttlQ *ttlQueue) removeLast(n int) {
