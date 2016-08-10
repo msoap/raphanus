@@ -1,6 +1,8 @@
 package raphanuscommon
 
 const (
+	// Version - library/server version
+	Version = "0.1"
 	// DefaultHost - host for server
 	DefaultHost = "localhost"
 	// DefaultPort - port for server

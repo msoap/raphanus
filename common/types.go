@@ -1,11 +1,22 @@
 package raphanuscommon
 
+// Stat - some stat: version, memory, calls count, etc
+type Stat struct {
+	Version string `json:"version"`
+}
+
 // JSON types for responses from server
 
 // OutputCommon - common part of all responses
 type OutputCommon struct {
 	ErrorCode    int    `json:"error_code"`
 	ErrorMessage string `json:"error_message,omitempty"`
+}
+
+// OutputStat - output for /stat
+type OutputStat struct {
+	OutputCommon
+	Stat
 }
 
 // OutputKeys - output for /keys

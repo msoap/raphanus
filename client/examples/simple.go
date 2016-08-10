@@ -12,6 +12,8 @@ func main() {
 	// or with default address:
 	// raph := raphanusclient.New()
 
+	printStat(raph)
+
 	saveIntKey(raph, "k1", 123, 0)
 	saveIntKey(raph, "k2", 777, 10)
 	incrDecrIntKey(raph, "k2")
@@ -24,6 +26,16 @@ func main() {
 	printKeys(raph)
 	printLength(raph)
 	removeKey(raph, "k1")
+}
+
+func printStat(raph raphanusclient.Client) {
+	stat, err := raph.Stat()
+	if err != nil {
+		fmt.Printf("Stat got error: %s\n", err)
+		return
+	}
+
+	fmt.Printf("Stat: %#v\n", stat)
 }
 
 func printKeys(raph raphanusclient.Client) {

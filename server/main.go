@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	version        = "0.1"
 	defaultAddress = raphanuscommon.DefaultHost + ":" + raphanuscommon.DefaultPort
 	usageString    = "raphanus-server [options]\noptions:"
 )
@@ -29,7 +28,7 @@ func getConfig() (cfg config) {
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Println(version)
+		fmt.Println(raphanuscommon.Version)
 		os.Exit(0)
 	}
 

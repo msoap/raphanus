@@ -47,6 +47,18 @@ func getJSONError(ctx echo.Context, err error) error {
 }
 
 /*
+handlerStat - get some stat: version, memory...
+
+curl http://localhost:8771/v1/stat
+result:
+	{"error_code":0,"version":"0.1"}
+*/
+func (app *server) handlerStat(ctx echo.Context) error {
+	stat := app.raphanus.Stat()
+	return ctx.JSON(http.StatusOK, raphanuscommon.OutputStat{Stat: stat})
+}
+
+/*
 handlerKeys - get all keys
 
 curl http://localhost:8771/v1/keys

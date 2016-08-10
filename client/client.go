@@ -56,6 +56,31 @@ func checkCommonError(body io.Reader) error {
 	return nil
 }
 
+// Stat - get some stat from server: version, memory, calls count, etc
+func (cli Client) Stat() (result raphanuscommon.Stat, err error) {
+	body, err := httpGet(cli.address + APIVersion + "/stat")
+	if err != nil {
+		return result, err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputStat{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return result, err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return result, fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.Stat, err
+}
+
 // Keys - get all keys from cache (response may be too large)
 func (cli Client) Keys() (result []string, err error) {
 	body, err := httpGet(cli.address + APIVersion + "/keys")

@@ -85,6 +85,13 @@ func (db *DB) Len() int {
 	return len(db.data)
 }
 
+// Stat - return some stat: version, memory, calls count, etc
+func (db *DB) Stat() raphanuscommon.Stat {
+	return raphanuscommon.Stat{
+		Version: raphanuscommon.Version,
+	}
+}
+
 // setTTL - set TTL on one value in DB
 func (db *DB) setTTL(key string, ttl int) {
 	if ttl > 0 {

@@ -31,6 +31,7 @@ func (app *server) run() {
 
 	// setup handlers
 	v1API := echoServer.Group("/v1")
+	v1API.GET("/stat", app.handlerStat)
 	v1API.GET("/keys", app.handlerKeys)
 	v1API.GET("/length", app.handlerLength)
 	v1API.DELETE("/remove/:key", app.handlerRemoveKey)
