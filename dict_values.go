@@ -17,7 +17,7 @@ func (db *DB) GetDict(key string) (value DictValue, err error) {
 		return value, raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok = rawVal.val.(DictValue)
+	value, ok = rawVal.(DictValue)
 	if !ok {
 		return value, raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -32,10 +32,7 @@ func (db *DB) SetDict(key string, value DictValue, ttl int) {
 		defer db.Unlock()
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
-
+	db.data[key] = value
 	db.setTTL(key, ttl)
 
 	return
@@ -52,9 +49,7 @@ func (db *DB) UpdateDict(key string, value DictValue) (err error) {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
+	db.data[key] = value
 
 	return nil
 }
@@ -70,7 +65,7 @@ func (db *DB) GetDictItem(key string, dictKey string) (string, error) {
 		return "", err
 	}
 
-	return db.data[key].val.(DictValue)[dictKey], nil
+	return db.data[key].(DictValue)[dictKey], nil
 }
 
 // SetDictItem - set item on dict value by exists key
@@ -84,7 +79,7 @@ func (db *DB) SetDictItem(key, dictKey, dictValue string) error {
 		return err
 	}
 
-	db.data[key].val.(DictValue)[dictKey] = dictValue
+	db.data[key].(DictValue)[dictKey] = dictValue
 
 	return nil
 }
@@ -100,7 +95,7 @@ func (db *DB) RemoveDictItem(key, dictKey string) error {
 		return err
 	}
 
-	delete(db.data[key].val.(DictValue), dictKey)
+	delete(db.data[key].(DictValue), dictKey)
 
 	return nil
 }
@@ -115,7 +110,7 @@ func (db *DB) validateDictParams(key, dictKey string) error {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok := rawVal.val.(DictValue)
+	value, ok := rawVal.(DictValue)
 	if !ok {
 		return raphanuscommon.ErrKeyTypeMissmatch
 	}

@@ -17,7 +17,7 @@ func (db *DB) GetList(key string) (value ListValue, err error) {
 		return value, raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok = rawVal.val.(ListValue)
+	value, ok = rawVal.(ListValue)
 	if !ok {
 		return value, raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -32,10 +32,7 @@ func (db *DB) SetList(key string, value ListValue, ttl int) {
 		defer db.Unlock()
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
-
+	db.data[key] = value
 	db.setTTL(key, ttl)
 
 	return
@@ -52,9 +49,7 @@ func (db *DB) UpdateList(key string, value ListValue) (err error) {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
+	db.data[key] = value
 
 	return nil
 }
@@ -71,7 +66,7 @@ func (db *DB) GetListItem(key string, index int) (string, error) {
 		return "", raphanuscommon.ErrKeyNotExists
 	}
 
-	valueList, ok := rawVal.val.(ListValue)
+	valueList, ok := rawVal.(ListValue)
 	if !ok {
 		return "", raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -96,7 +91,7 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	valueList, ok := rawVal.val.(ListValue)
+	valueList, ok := rawVal.(ListValue)
 	if !ok {
 		return raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -105,6 +100,6 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 		return raphanuscommon.ErrListOutOfRange
 	}
 
-	db.data[key].val.(ListValue)[index] = value
+	db.data[key].(ListValue)[index] = value
 	return nil
 }

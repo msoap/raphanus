@@ -14,7 +14,7 @@ func (db *DB) GetInt(key string) (int64, error) {
 		return 0, raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok := rawVal.val.(int64)
+	value, ok := rawVal.(int64)
 	if !ok {
 		return 0, raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -29,12 +29,8 @@ func (db *DB) SetInt(key string, value int64, ttl int) {
 		defer db.Unlock()
 	}
 
-	item := db.data[key]
-	item.val = value
-
+	db.data[key] = value
 	db.setTTL(key, ttl)
-
-	db.data[key] = item
 
 	return
 }
@@ -51,9 +47,7 @@ func (db *DB) UpdateInt(key string, value int64) (err error) {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
+	db.data[key] = value
 
 	return nil
 }
@@ -86,14 +80,13 @@ func (db *DB) addInt(key string, value int64) (err error) {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	_, ok = db.data[key].val.(int64)
+	_, ok = db.data[key].(int64)
 	if !ok {
 		return raphanuscommon.ErrKeyTypeMissmatch
 	}
 
-	item := db.data[key]
-	item.val = item.val.(int64) + value
-	db.data[key] = item
+	item := db.data[key].(int64)
+	db.data[key] = item + value
 
 	return nil
 }

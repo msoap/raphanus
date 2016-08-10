@@ -14,7 +14,7 @@ func (db *DB) GetStr(key string) (string, error) {
 		return "", raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok := rawVal.val.(string)
+	value, ok := rawVal.(string)
 	if !ok {
 		return "", raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -29,10 +29,7 @@ func (db *DB) SetStr(key, value string, ttl int) {
 		defer db.Unlock()
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
-
+	db.data[key] = value
 	db.setTTL(key, ttl)
 
 	return
@@ -49,9 +46,7 @@ func (db *DB) UpdateStr(key, value string) (err error) {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	item := db.data[key]
-	item.val = value
-	db.data[key] = item
+	db.data[key] = value
 
 	return nil
 }

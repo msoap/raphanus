@@ -9,13 +9,13 @@ import (
 	"github.com/msoap/raphanus/common"
 )
 
-type value struct {
-	val interface{}
-}
+// type value struct {
+// 	val interface{}
+// }
 
 // DB - in-memory cache object
 type DB struct {
-	data     map[string]value
+	data     map[string]interface{}
 	withLock bool // execute get/set methods under lock
 	ttlQueue ttlQueue
 	*sync.RWMutex
@@ -24,7 +24,7 @@ type DB struct {
 // New - get new cache object
 func New() DB {
 	return DB{
-		data:     map[string]value{},
+		data:     map[string]interface{}{},
 		withLock: true,
 		ttlQueue: newTTLQueue(),
 		RWMutex:  new(sync.RWMutex),
