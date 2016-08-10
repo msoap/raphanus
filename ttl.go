@@ -33,18 +33,35 @@ func (ttlQ *ttlQueue) sortSortedListWithNewLastItem() {
 	}
 
 	lastItem := ttlQ.queue[length-1]
-
-	// TODO: replace "full-scan" with binary search
-	prevIdx := length - 2
-	for prevIdx >= 0 && lastItem.unixtime > ttlQ.queue[prevIdx].unixtime {
-		prevIdx--
-	}
-	if prevIdx == length-2 {
+	if lastItem.unixtime <= ttlQ.queue[length-2].unixtime {
+		// already sorted
 		return
 	}
 
-	copy(ttlQ.queue[prevIdx+2:length], ttlQ.queue[prevIdx+1:length-1])
-	ttlQ.queue[prevIdx+1] = lastItem
+	// binary search index for insert new element
+	searchIdx := 0
+	firstIdx, lastIdx := 0, length-2
+
+	if lastItem.unixtime < ttlQ.queue[0].unixtime {
+
+		for lastIdx-firstIdx > 1 {
+			halfIdx := firstIdx + (lastIdx-firstIdx)/2
+			if lastItem.unixtime <= ttlQ.queue[halfIdx].unixtime {
+				firstIdx = halfIdx
+			} else if lastItem.unixtime > ttlQ.queue[halfIdx].unixtime {
+				lastIdx = halfIdx
+			}
+		}
+		searchIdx = lastIdx - 1
+
+	} else {
+		// is biggest item - move to 0-th item
+		searchIdx = -1
+	}
+
+	// shift sub-slice to end of list, and insert new element
+	copy(ttlQ.queue[searchIdx+2:length], ttlQ.queue[searchIdx+1:length-1])
+	ttlQ.queue[searchIdx+1] = lastItem
 
 	return
 }

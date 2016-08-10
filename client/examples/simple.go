@@ -17,8 +17,9 @@ func main() {
 
 	printStat(raph)
 
-	saveIntKey(raph, "k1", 123, 0)
+	saveIntKey(raph, "k1", 123, 5)
 	saveIntKey(raph, "k2", 777, 10)
+	saveIntKey(raph, "k3", 771, 7)
 	incrDecrIntKey(raph, "k2")
 	printIntKey(raph, "k1")
 	updateIntKey(raph, "k1", 321)
@@ -126,7 +127,7 @@ func printStrKey(raph raphanusclient.Client, key string) {
 }
 
 func testStringValues(raph raphanusclient.Client, key string) {
-	if err := raph.SetStr(key, "str val 1", 0); err != nil {
+	if err := raph.SetStr(key, "str val 1", 7); err != nil {
 		fmt.Printf("SetStr got error: %s\n", err)
 		return
 	}
