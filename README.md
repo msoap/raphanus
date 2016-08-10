@@ -13,6 +13,7 @@ From source:
     go get -u github.com/msoap/raphanus
     # build server & cli
     cd $GOPATH/src/github.com/msoap/raphanus/server && go build -o $GOPATH/bin/raphanus-server
+    # cli client not implement now
     cd $GOPATH/src/github.com/msoap/raphanus/cli && go build -o $GOPATH/bin/raphanus-cli
 
 From Docker hub:
