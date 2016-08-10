@@ -5,20 +5,19 @@ package raphanus
 
 import (
 	"sync"
-	"time"
 
 	"github.com/msoap/raphanus/common"
 )
 
 type value struct {
 	val interface{}
-	ttl time.Time
 }
 
 // DB - in-memory cache object
 type DB struct {
 	data     map[string]value
 	withLock bool // execute get/set methods under lock
+	ttlQueue ttlQueue
 	*sync.RWMutex
 }
 
@@ -27,6 +26,7 @@ func New() DB {
 	return DB{
 		data:     map[string]value{},
 		withLock: true,
+		ttlQueue: newTTLQueue(),
 		RWMutex:  new(sync.RWMutex),
 	}
 }
@@ -95,12 +95,14 @@ func (db *DB) Stat() raphanuscommon.Stat {
 // setTTL - set TTL on one value in DB
 func (db *DB) setTTL(key string, ttl int) {
 	if ttl > 0 {
-		go func() {
-			time.Sleep(time.Duration(ttl) * time.Second)
+		db.ttlQueue.add(ttlQueueItem{key: &key, unixtime: ttl2unixtime(ttl)})
+		db.ttlQueue.run(func(keys []string) {
 			db.Lock()
 			defer db.Unlock()
 
-			delete(db.data, key)
-		}()
+			for _, key := range keys {
+				delete(db.data, key)
+			}
+		})
 	}
 }

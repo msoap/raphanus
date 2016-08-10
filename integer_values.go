@@ -1,10 +1,6 @@
 package raphanus
 
-import (
-	"time"
-
-	"github.com/msoap/raphanus/common"
-)
+import "github.com/msoap/raphanus/common"
 
 // GetInt - get integer value by key
 func (db *DB) GetInt(key string) (int64, error) {
@@ -37,9 +33,6 @@ func (db *DB) SetInt(key string, value int64, ttl int) {
 	item.val = value
 
 	db.setTTL(key, ttl)
-	if ttl > 0 {
-		item.ttl = time.Now().Add(time.Duration(ttl) * time.Second)
-	}
 
 	db.data[key] = item
 
