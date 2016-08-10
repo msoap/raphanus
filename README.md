@@ -22,11 +22,30 @@ From Docker hub:
 
 ## Run server
 
-    raphanus-server [-address host:port]
+    raphanus-server [options]
+    options:
+      -address string
+           	address for bind server (default "localhost:8771")
+      -auth string
+           	user:password for enable HTTP basic authentication
+      -version
+           	get version
 
 as Docker container:
 
     docker run --name raphanus --publish 8771:8771 --detach msoap/raphanus
+
+## Examples: get calls to server by curl
+
+ * get count of keys: `curl -s 'http://localhost:8771/v1/length'`
+ * get keys: `curl -s 'http://localhost:8771/v1/keys'`
+ * get stat with authentication: `curl -s -u user:pass 'http://localhost:8771/v1/stat'`
+ * set integer key `k1` with ttl (100 sec): `curl -s -X POST -d 123 'http://localhost:8771/v1/int/k1?ttl=100'`
+ * set string key `k2` without ttl: `curl -s -X POST -d 'str value' 'http://localhost:8771/v1/str/k2'`
+ * set list value: `curl -s -X POST -H 'Content-Type: application/json' -d '["v1", "v2"]' http://localhost:8771/v1/list/k3`
+ * set dict value: `curl -s -X POST -H 'Content-Type: application/json' -d '{"dk1": "v1", "dk2": "v2"}' http://localhost:8771/v1/dict/k4`
+ * delete key `k1`: `curl -s -X DELETE http://localhost:8771/v1/remove/k1`
+ * see other in [handlers.go](https://github.com/msoap/raphanus/blob/master/server/handlers.go)
 
 ## Use as embed DB
 
@@ -77,9 +96,13 @@ import (
 )
 
 func main() {
-    raph := raphanusclient.New()
-    // or with config:
-    // raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
+	// with default address:
+	raph := raphanusclient.New()
+	// or with another address:
+	// raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
+	// or with authentication:
+	// raph := raphanusclient.New(raphanusclient.Cfg{User: "uname", Password: "pass"})
+
     raph.SetStr("key", "value", 3600)
     v, err := raph.GetStr("key")
     if err == raphanuscommon.ErrKeyNotExists {

@@ -29,6 +29,15 @@ func (app *server) run() {
 		middleware.Recover(),
 	)
 
+	if len(app.cfg.user) > 0 {
+		echoServer.Use(middleware.BasicAuth(func(username, password string) bool {
+			if username == app.cfg.user && password == app.cfg.password {
+				return true
+			}
+			return false
+		}))
+	}
+
 	// setup handlers
 	v1API := echoServer.Group("/v1")
 	v1API.GET("/stat", app.handlerStat)

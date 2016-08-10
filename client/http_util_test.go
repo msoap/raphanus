@@ -9,13 +9,15 @@ import (
 )
 
 func Test_HTTP(t *testing.T) {
+	app := New()
+
 	ts := getTestServer(map[string]string{
 		"/test1": `response 1`,
 		"/":      `404`,
 	})
 	defer ts.Close()
 
-	reader, err := httpGet(ts.URL + "/test1")
+	reader, err := app.httpGet(ts.URL + "/test1")
 	if err != nil {
 		t.Errorf("1. httpGet() failed, error: %s", err)
 	}
@@ -27,7 +29,7 @@ func Test_HTTP(t *testing.T) {
 		t.Errorf("3. httpGet() failed, body: %s", string(body))
 	}
 
-	reader, err = httpPost(ts.URL+"/test1", nil)
+	reader, err = app.httpPost(ts.URL+"/test1", nil)
 	if err != nil {
 		t.Errorf("1. httpPost() failed, error: %s", err)
 	}
@@ -39,7 +41,7 @@ func Test_HTTP(t *testing.T) {
 		t.Errorf("3. httpPost() failed, body: %s", string(body))
 	}
 
-	reader, err = httpPut(ts.URL+"/test1", nil)
+	reader, err = app.httpPut(ts.URL+"/test1", nil)
 	if err != nil {
 		t.Errorf("1. httpPut() failed, error: %s", err)
 	}
@@ -51,7 +53,7 @@ func Test_HTTP(t *testing.T) {
 		t.Errorf("3. httpPut() failed, body: %s", string(body))
 	}
 
-	reader, err = httpDelete(ts.URL + "/test1")
+	reader, err = app.httpDelete(ts.URL + "/test1")
 	if err != nil {
 		t.Errorf("1. httpDelete() failed, error: %s", err)
 	}
@@ -63,7 +65,7 @@ func Test_HTTP(t *testing.T) {
 		t.Errorf("3. httpDelete() failed, body: %s", string(body))
 	}
 
-	_, err = httpClient("FAKE method", "http://example/test3", nil)
+	_, err = app.httpClient("FAKE method", "http://example/test3", nil)
 	if err == nil {
 		t.Errorf("1. callHTTP() failed")
 	}

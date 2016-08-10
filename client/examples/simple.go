@@ -8,9 +8,12 @@ import (
 )
 
 func main() {
-	raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
-	// or with default address:
-	// raph := raphanusclient.New()
+	// with default address:
+	raph := raphanusclient.New()
+	// or with another address:
+	// raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
+	// or with authentication:
+	// raph := raphanusclient.New(raphanusclient.Cfg{User: "uname", Password: "pass"})
 
 	printStat(raph)
 

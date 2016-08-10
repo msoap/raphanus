@@ -2,6 +2,7 @@ package raphanusclient
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -9,31 +10,31 @@ import (
 )
 
 // httpGet - call GET HTTP
-func httpGet(URL string) (body io.ReadCloser, err error) {
-	body, err = httpClient("GET", URL, nil)
+func (cli Client) httpGet(URL string) (body io.ReadCloser, err error) {
+	body, err = cli.httpClient("GET", URL, nil)
 	return body, err
 }
 
 // httpPost - HTTP POST call
-func httpPost(URL string, bodyRequest []byte) (body io.ReadCloser, err error) {
-	body, err = httpClient("POST", URL, bytes.NewReader(bodyRequest))
+func (cli Client) httpPost(URL string, bodyRequest []byte) (body io.ReadCloser, err error) {
+	body, err = cli.httpClient("POST", URL, bytes.NewReader(bodyRequest))
 	return body, err
 }
 
 // httpPut - HTTP PUT call
-func httpPut(URL string, bodyRequest []byte) (body io.ReadCloser, err error) {
-	body, err = httpClient("PUT", URL, bytes.NewReader(bodyRequest))
+func (cli Client) httpPut(URL string, bodyRequest []byte) (body io.ReadCloser, err error) {
+	body, err = cli.httpClient("PUT", URL, bytes.NewReader(bodyRequest))
 	return body, err
 }
 
 // httpDelete - HTTP DELETE call
-func httpDelete(URL string) (body io.ReadCloser, err error) {
-	body, err = httpClient("DELETE", URL, nil)
+func (cli Client) httpDelete(URL string) (body io.ReadCloser, err error) {
+	body, err = cli.httpClient("DELETE", URL, nil)
 	return body, err
 }
 
 // httpClient - call GET/POST/PUT/... by HTTP
-func httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.ReadCloser, error) {
+func (cli Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.ReadCloser, error) {
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 	}
@@ -43,9 +44,17 @@ func httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.ReadCloser, error
 		return nil, err
 	}
 
+	if len(cli.user) > 0 && len(cli.password) > 0 {
+		request.SetBasicAuth(cli.user, cli.password)
+	}
+
 	response, err := client.Do(request)
 	if err != nil {
 		return nil, err
+	}
+
+	if response.StatusCode == http.StatusUnauthorized {
+		return nil, fmt.Errorf("Unauthorized")
 	}
 
 	return response.Body, nil
