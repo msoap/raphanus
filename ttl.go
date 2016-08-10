@@ -79,7 +79,7 @@ func (ttlQ *ttlQueue) run(fn func([]string)) {
 		defer ttlQ.Unlock()
 
 		ttlQ.removeLast(theSameLastCnt)
-		fn(keysForDelete)
+		go fn(keysForDelete)
 		go ttlQ.run(fn) // handle next keys with ttl
 	})
 }
