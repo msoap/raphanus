@@ -28,6 +28,10 @@ From Docker hub:
            	address for bind server (default "localhost:8771")
       -auth string
            	user:password for enable HTTP basic authentication
+      -filename string
+           	file name for storage on disk, '' - for work in-memory only
+      -sync-time int
+           	time in seconds between sync on disk
       -version
            	get version
 
