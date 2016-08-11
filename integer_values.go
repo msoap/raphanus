@@ -29,6 +29,7 @@ func (db *DB) SetInt(key string, value int64, ttl int) {
 		defer db.Unlock()
 	}
 
+	// TODO: validate key - "\t" damage file format
 	db.data[key] = value
 	db.setTTL(key, ttl)
 

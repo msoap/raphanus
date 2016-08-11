@@ -8,7 +8,7 @@ import (
 )
 
 func Test_DictMethods01(t *testing.T) {
-	raph := New()
+	raph := New("", 0)
 
 	raph.SetDict("key", DictValue{"value": "v1"}, 0)
 	val, err := raph.GetDict("key")
@@ -36,7 +36,7 @@ func Test_DictMethods01(t *testing.T) {
 }
 
 func Test_DictMethods02(t *testing.T) {
-	raph := New()
+	raph := New("", 0)
 
 	raph.SetDict("key", DictValue{"k1": "v1", "k2": "v2"}, 0)
 

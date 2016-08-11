@@ -17,7 +17,7 @@ type server struct {
 func newAPI(cfg config) server {
 	return server{
 		cfg:      cfg,
-		raphanus: raphanus.New(),
+		raphanus: raphanus.New(cfg.filename, cfg.syncTime),
 	}
 }
 

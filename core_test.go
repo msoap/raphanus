@@ -9,7 +9,7 @@ import (
 )
 
 func Test_coreSimple01(t *testing.T) {
-	raph := New()
+	raph := New("", 0)
 
 	raph.SetStr("key", "value", 0)
 	vStr, err := raph.GetStr("key")

@@ -4,6 +4,7 @@ Package raphanus - simple implementation of Redis-like in-memory cache
 package raphanus
 
 import (
+	"log"
 	"sync"
 
 	"github.com/msoap/raphanus/common"
@@ -11,20 +12,37 @@ import (
 
 // DB - in-memory cache object
 type DB struct {
-	data     map[string]interface{}
-	withLock bool // execute get/set methods under lock
-	ttlQueue ttlQueue
+	data              map[string]interface{}
+	withLock          bool // execute get/set methods under lock
+	ttlQueue          ttlQueue
+	fsStorageName     string // file name for save/load
+	fsStorageSyncTime int    // seconds between saves on disk
 	*sync.RWMutex
 }
 
 // New - get new cache object
-func New() DB {
-	return DB{
-		data:     map[string]interface{}{},
-		withLock: true,
-		ttlQueue: newTTLQueue(),
-		RWMutex:  new(sync.RWMutex),
+func New(fsStorageName string, fsStorageSyncTime int) DB {
+	db := DB{
+		data:              map[string]interface{}{},
+		withLock:          true,
+		ttlQueue:          newTTLQueue(),
+		fsStorageName:     fsStorageName,
+		fsStorageSyncTime: fsStorageSyncTime,
+		RWMutex:           new(sync.RWMutex),
 	}
+
+	if len(fsStorageName) > 0 {
+		err := db.fsLoad()
+		if err != nil {
+			log.Printf("Load from file failed: %s", err)
+		}
+
+		if fsStorageSyncTime > 0 {
+			go db.fsHandle()
+		}
+	}
+
+	return db
 }
 
 // UnderRLock - execute few read-methods undef one RLock

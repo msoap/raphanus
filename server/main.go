@@ -18,10 +18,14 @@ type config struct {
 	address  string // like: "http://host:port"
 	user     string // for HTTP basic authentication
 	password string
+	filename string // file for storage on disk
+	syncTime int    // time in seconds between sync on disk
 }
 
 func getConfig() (cfg config) {
 	flag.StringVar(&cfg.address, "address", defaultAddress, "address for bind server")
+	flag.StringVar(&cfg.filename, "filename", "", "file name for storage on disk, '' - for work in-memory only")
+	flag.IntVar(&cfg.syncTime, "sync-time", 0, "time in seconds between sync on disk")
 	authUserPass := flag.String("auth", "", "user:password for enable HTTP basic authentication")
 
 	showVersion := flag.Bool("version", false, "get version")

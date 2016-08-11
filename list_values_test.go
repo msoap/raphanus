@@ -9,7 +9,7 @@ import (
 )
 
 func Test_ListMethods01(t *testing.T) {
-	raph := New()
+	raph := New("", 0)
 
 	raph.SetList("key", []string{"value", "2"}, 1)
 	val, err := raph.GetList("key")
@@ -29,7 +29,7 @@ func Test_ListMethods01(t *testing.T) {
 }
 
 func Test_ListMethods02(t *testing.T) {
-	raph := New()
+	raph := New("", 0)
 
 	raph.SetList("key", []string{"value", "2"}, 0)
 	err := raph.SetListItem("key", 1, "3")
