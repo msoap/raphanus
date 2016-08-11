@@ -20,12 +20,14 @@ type config struct {
 	password string
 	filename string // file for storage on disk
 	syncTime int    // time in seconds between sync on disk
+	logging  bool   // log calls
 }
 
 func getConfig() (cfg config) {
 	flag.StringVar(&cfg.address, "address", defaultAddress, "address for bind server")
 	flag.StringVar(&cfg.filename, "filename", "", "file name for storage on disk, '' - for work in-memory only")
 	flag.IntVar(&cfg.syncTime, "sync-time", 0, "time in seconds between sync on disk")
+	flag.BoolVar(&cfg.logging, "logging", false, "log calls")
 	authUserPass := flag.String("auth", "", "user:password for enable HTTP basic authentication")
 
 	showVersion := flag.Bool("version", false, "get version")

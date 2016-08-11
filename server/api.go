@@ -24,10 +24,10 @@ func newAPI(cfg config) server {
 func (app *server) run() {
 	echoServer := echo.New()
 
-	echoServer.Use(
-		middleware.LoggerWithConfig(middleware.LoggerConfig{Format: `${time_rfc3339} ${remote_ip} ${method} ${path} ${status} ${bytes_out} "${user_agent}"` + "\n"}),
-		middleware.Recover(),
-	)
+	echoServer.Use(middleware.Recover())
+	if app.cfg.logging {
+		echoServer.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{Format: `${time_rfc3339} ${remote_ip} ${method} ${path} ${status} ${bytes_out} "${user_agent}"` + "\n"}))
+	}
 
 	if len(app.cfg.user) > 0 {
 		echoServer.Use(middleware.BasicAuth(func(username, password string) bool {
