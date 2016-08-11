@@ -17,3 +17,6 @@ run-client-example:
 
 watch-and-restart-server:
 	reflex -s make server-run
+
+docker-build-image:
+	rocker build
