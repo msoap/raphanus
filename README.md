@@ -103,3 +103,27 @@ func main() {
     }
 }
 ```
+
+## Bencmarks:
+### with servers in Docker
+
+	$ docker run --name raphanus --publish 8771:8771 --rm msoap/raphanus
+	$ docker run --name redis --publish --rm 6379:6379 redis
+    $ go test -bench Benchmark
+    
+    Benchmark_raphanusServer-4             	    2000       	    827598 ns/op
+    Benchmark_raphanusEmbed-4              	 1000000       	      1674 ns/op
+    Benchmark_redis-4                      	    2000       	    535213 ns/op
+    Benchmark_raphanusServerTTL-4          	    2000       	   1025429 ns/op
+    Benchmark_raphanusEmbedTTL-4           	   10000       	    172044 ns/op
+    Benchmark_redisTTL-4                   	    2000       	    625432 ns/op
+
+### local raphanus and redis servers (on MacOS)
+
+    $ go test -bench Benchmark
+    Benchmark_raphanusServer-4             	    5000       	    331855 ns/op
+    Benchmark_raphanusEmbed-4              	 1000000       	      1638 ns/op
+    Benchmark_redis-4                      	   10000       	    124843 ns/op
+    Benchmark_raphanusServerTTL-4          	    3000       	    405023 ns/op
+    Benchmark_raphanusEmbedTTL-4           	   10000       	    221481 ns/op
+    Benchmark_redisTTL-4                   	   10000       	    128916 ns/op
