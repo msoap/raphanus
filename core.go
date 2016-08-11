@@ -9,10 +9,6 @@ import (
 	"github.com/msoap/raphanus/common"
 )
 
-// type value struct {
-// 	val interface{}
-// }
-
 // DB - in-memory cache object
 type DB struct {
 	data     map[string]interface{}
