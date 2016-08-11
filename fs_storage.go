@@ -153,9 +153,9 @@ func (db *DB) fsSave() (err error) {
 func (db *DB) fsHandle() {
 	for {
 		time.Sleep(time.Duration(db.fsStorageSyncTime) * time.Second)
-		log.Printf("Save to file...") // TODO: remove
 		err := db.fsSave()
 		if err != nil {
+			// TODO: add option for logging
 			log.Printf("Save to file failed: %s", err)
 		}
 	}
