@@ -76,19 +76,6 @@ func main() {
         }
         raph.SetStr("k1", v + " updated", 0)
     })
-
-    multiKeys := []string{"k1", "k2"}
-    multiVal := []string{}
-    raph.UnderRLock(func () {
-        for _, k := multiKeys {
-            v, err := raph.GetStr(k)
-            if err != nil {
-                multiVal = multiVal[:]
-                return
-            }
-            multiVal = append(multiVal, v)
-        }
-    })
 }
 ```
 
