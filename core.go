@@ -100,14 +100,16 @@ func (db *DB) Stat() raphanuscommon.Stat {
 // setTTL - set TTL on one value in DB
 func (db *DB) setTTL(key string, ttl int) {
 	if ttl > 0 {
-		db.ttlQueue.add(ttlQueueItem{key: &key, unixtime: ttl2unixtime(ttl)})
-		db.ttlQueue.run(func(keys []string) {
-			db.Lock()
-			defer db.Unlock()
+		go func() {
+			db.ttlQueue.add(ttlQueueItem{key: &key, unixtime: ttl2unixtime(ttl)})
+			db.ttlQueue.run(func(keys []string) {
+				db.Lock()
+				defer db.Unlock()
 
-			for _, key := range keys {
-				delete(db.data, key)
-			}
-		})
+				for _, key := range keys {
+					delete(db.data, key)
+				}
+			})
+		}()
 	}
 }
