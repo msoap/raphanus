@@ -83,7 +83,11 @@ func (db *DB) fsLoad() (err error) {
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse list: %s", parts[0], err)
 			}
-			db.SetList(parts[0], listVal, 0)
+
+			err = db.SetList(parts[0], listVal, 0)
+			if err != nil {
+				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+			}
 		case "dict":
 			dictVal := make(raphanuscommon.DictValue)
 			err = json.Unmarshal([]byte(parts[2]), &dictVal)

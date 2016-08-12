@@ -366,7 +366,10 @@ func (app *server) setList(ctx echo.Context) error {
 	}
 
 	key := ctx.Param("key")
-	app.raphanus.SetList(key, newListValue, ttl)
+	err = app.raphanus.SetList(key, newListValue, ttl)
+	if err != nil {
+		return getJSONError(ctx, err)
+	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }

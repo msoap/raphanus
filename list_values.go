@@ -23,16 +23,20 @@ func (db *DB) GetList(key string) (value raphanuscommon.ListValue, err error) {
 }
 
 // SetList - create/update list value by key
-func (db *DB) SetList(key string, value raphanuscommon.ListValue, ttl int) {
+func (db *DB) SetList(key string, value raphanuscommon.ListValue, ttl int) error {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
 	}
 
+	if !isValidKey(key) {
+		return raphanuscommon.ErrKeyIsNotValid
+	}
+
 	db.data[key] = value
 	db.setTTL(key, ttl)
 
-	return
+	return nil
 }
 
 // UpdateList - update list value by exists key
