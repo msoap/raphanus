@@ -444,18 +444,13 @@ result:
 	{"error_code":0, "value_list": {"dk1": "v1", "dk2": "v2"}}
 */
 func (app *server) getDict(ctx echo.Context) error {
-	type outputGetDict struct {
-		raphanuscommon.OutputCommon
-		ValueDict raphanuscommon.DictValue `json:"value_dict"`
-	}
-
 	key := ctx.Param("key")
 	valueDict, err := app.raphanus.GetDict(key)
 	if err != nil {
 		return getJSONError(ctx, err)
 	}
 
-	result := outputGetDict{ValueDict: valueDict}
+	result := raphanuscommon.OutputGetDict{ValueDict: valueDict}
 	return ctx.JSON(http.StatusOK, result)
 }
 

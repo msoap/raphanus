@@ -432,3 +432,137 @@ func (cli Client) SetListItem(key string, idx int, value string) (err error) {
 
 	return checkCommonError(body)
 }
+
+// Dict methods ------------------------------
+
+// GetDict - get dict value by key
+func (cli Client) GetDict(key string) (result raphanuscommon.DictValue, err error) {
+	body, err := cli.httpGet(cli.address + APIVersion + "/dict/" + url.QueryEscape(key))
+	if err != nil {
+		return result, err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputGetDict{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return result, err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return result, fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.ValueDict, nil
+}
+
+// SetDict - set dict value by key
+func (cli Client) SetDict(key string, value raphanuscommon.DictValue, ttl int) (err error) {
+	ttlParam := ""
+	if ttl > 0 {
+		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
+	}
+
+	valueJSON, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPost(cli.address+APIVersion+"/dict/"+url.QueryEscape(key)+ttlParam, valueJSON)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// UpdateDict - update dict value by key
+func (cli Client) UpdateDict(key string, value raphanuscommon.DictValue) (err error) {
+	valueJSON, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPut(cli.address+APIVersion+"/dict/"+url.QueryEscape(key), valueJSON)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// GetDictItem - get item form dict value by key and dict key
+func (cli Client) GetDictItem(key string, dkey string) (result string, err error) {
+	dkeyParam := "?dkey=" + url.QueryEscape(dkey)
+	body, err := cli.httpGet(cli.address + APIVersion + "/dict/item/" + url.QueryEscape(key) + dkeyParam)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputGetStr{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return "", err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return "", fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.ValueStr, nil
+}
+
+// SetDictItem - set item in dict value by key and dict key
+func (cli Client) SetDictItem(key string, dkey string, value string) (err error) {
+	dkeyParam := "?dkey=" + url.QueryEscape(dkey)
+	body, err := cli.httpPut(cli.address+APIVersion+"/dict/item/"+url.QueryEscape(key)+dkeyParam, []byte(value))
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// RemoveDictItem - remove one item from dict value by key and dict key
+func (cli Client) RemoveDictItem(key string, dkey string) (err error) {
+	dkeyParam := "?dkey=" + url.QueryEscape(dkey)
+	body, err := cli.httpDelete(cli.address + APIVersion + "/dict/item/" + url.QueryEscape(key) + dkeyParam)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}

@@ -54,3 +54,9 @@ type OutputGetList struct {
 	OutputCommon
 	ValueList ListValue `json:"value_list"`
 }
+
+// OutputGetDict - output for /dict/:key
+type OutputGetDict struct {
+	OutputCommon
+	ValueDict DictValue `json:"value_dict"`
+}

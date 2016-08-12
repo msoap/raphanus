@@ -28,6 +28,7 @@ func main() {
 
 	testStringValues(raph, "k3")
 	testListValues(raph)
+	testDictValues(raph)
 
 	printKeys(raph)
 	printLength(raph)
@@ -156,10 +157,22 @@ func testListValues(raph raphanusclient.Client) {
 	}
 	fmt.Printf("List value: %v\n", listVal)
 
-	if err := raph.UpdateList("key_list_01", raphanuscommon.ListValue{"l1", "l2", "l3_new"}); err != nil {
+	if err = raph.UpdateList("key_list_01", raphanuscommon.ListValue{"l1", "l2", "l3_new"}); err != nil {
 		fmt.Printf("UpdateList got error: %s\n", err)
 		return
 	}
+
+	if err = raph.SetListItem("key_list_01", 1, "l2_new"); err != nil {
+		fmt.Printf("SetListItem got error: %s\n", err)
+		return
+	}
+
+	strVal, err := raph.GetListItem("key_list_01", 1)
+	if err != nil {
+		fmt.Printf("GetListItem got error: %s\n", err)
+		return
+	}
+	fmt.Printf("GetListItem(1): %s\n", strVal)
 
 	listVal, err = raph.GetList("key_list_01")
 	if err != nil {
@@ -167,4 +180,47 @@ func testListValues(raph raphanusclient.Client) {
 		return
 	}
 	fmt.Printf("List new value: %v\n", listVal)
+}
+
+func testDictValues(raph raphanusclient.Client) {
+	if err := raph.SetDict("key_dict_01", raphanuscommon.DictValue{"dk1": "d1", "dk2": "d2"}, 10); err != nil {
+		fmt.Printf("SetDict got error: %s\n", err)
+		return
+	}
+
+	if err := raph.UpdateDict("key_dict_01", raphanuscommon.DictValue{"dk1": "d1", "dk2": "d2", "dk3": "d3"}); err != nil {
+		fmt.Printf("UpdateDict got error: %s\n", err)
+		return
+	}
+
+	dictVal, err := raph.GetDict("key_dict_01")
+	if err != nil {
+		fmt.Printf("GetDict got error: %s\n", err)
+		return
+	}
+	fmt.Printf("DictValue value: %v\n", dictVal)
+
+	if err = raph.SetDictItem("key_dict_01", "dk2", "d2_new"); err != nil {
+		fmt.Printf("SetDictItem got error: %s\n", err)
+		return
+	}
+
+	strVal, err := raph.GetDictItem("key_dict_01", "dk2")
+	if err != nil {
+		fmt.Printf("GetDictItem got error: %s\n", err)
+		return
+	}
+	fmt.Printf("GetListItem('dk2'): %s\n", strVal)
+
+	if err = raph.RemoveDictItem("key_dict_01", "dk1"); err != nil {
+		fmt.Printf("RemoveDictItem got error: %s\n", err)
+		return
+	}
+
+	dictVal, err = raph.GetDict("key_dict_01")
+	if err != nil {
+		fmt.Printf("GetDict got error: %s\n", err)
+		return
+	}
+	fmt.Printf("DictValue new value: %v\n", dictVal)
 }
