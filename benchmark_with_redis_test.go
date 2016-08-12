@@ -40,7 +40,10 @@ func Benchmark_raphanusEmbed(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
-		raph.SetStr("key_"+strI, "bar_"+strI, 0)
+		err := raph.SetStr("key_"+strI, "bar_"+strI, 0)
+		if err != nil {
+			b.Fatal(err)
+		}
 
 		newVal, err := raph.GetStr("key_" + strI)
 		if err != nil {
@@ -100,7 +103,10 @@ func Benchmark_raphanusEmbedTTL(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
-		raph.SetStr("key_"+strI, "bar_"+strI, 2)
+		err := raph.SetStr("key_"+strI, "bar_"+strI, 2)
+		if err != nil {
+			b.Fatal(err)
+		}
 
 		newVal, err := raph.GetStr("key_" + strI)
 		if err != nil {

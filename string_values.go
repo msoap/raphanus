@@ -23,16 +23,20 @@ func (db *DB) GetStr(key string) (string, error) {
 }
 
 // SetStr - create/update string value by key
-func (db *DB) SetStr(key, value string, ttl int) {
+func (db *DB) SetStr(key, value string, ttl int) error {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
 	}
 
+	if !isValidKey(key) {
+		return raphanuscommon.ErrKeyIsNotValid
+	}
+
 	db.data[key] = value
 	db.setTTL(key, ttl)
 
-	return
+	return nil
 }
 
 // UpdateStr - update string value by exists key

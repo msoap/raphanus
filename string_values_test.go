@@ -10,7 +10,9 @@ func Test_StringMethods(t *testing.T) {
 	raph := New("", 0)
 
 	_ = raph.SetInt("key_int", 10, 0)
-	raph.SetStr("key", "value", 0)
+	if err := raph.SetStr("key", "value", 0); err != nil {
+		t.Errorf("SetStr got error: %v", err)
+	}
 
 	if _, err := raph.GetStr("key_int"); err == nil {
 		t.Error("GetStr check type failed")

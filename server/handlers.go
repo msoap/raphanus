@@ -287,7 +287,10 @@ func (app *server) setStr(ctx echo.Context) error {
 	}
 
 	key := ctx.Param("key")
-	app.raphanus.SetStr(key, newStrValue, ttl)
+	err = app.raphanus.SetStr(key, newStrValue, ttl)
+	if err != nil {
+		return getJSONError(ctx, err)
+	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }

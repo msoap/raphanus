@@ -57,6 +57,7 @@ func (db *DB) fsLoad() (err error) {
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse int: %s", parts[0], err)
 			}
+
 			err = db.SetInt(parts[0], intVal, 0)
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
@@ -70,8 +71,12 @@ func (db *DB) fsLoad() (err error) {
 			if len(listVal) != 1 {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse string", parts[0])
 			}
+
 			strVal := listVal[0]
-			db.SetStr(parts[0], strVal, 0)
+			err = db.SetStr(parts[0], strVal, 0)
+			if err != nil {
+				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+			}
 		case "list":
 			listVal := make(raphanuscommon.ListValue, 0)
 			err = json.Unmarshal([]byte(parts[2]), &listVal)

@@ -24,7 +24,9 @@ func Test_UpdateInt(t *testing.T) {
 		t.Error("GetInt want error")
 	}
 
-	raph.SetStr("key_str", "str", 0)
+	if err := raph.SetStr("key_str", "str", 0); err != nil {
+		t.Errorf("SetStr got error: %v", err)
+	}
 	if _, err := raph.GetInt("key_str"); err == nil {
 		t.Error("GetInt want error for type")
 	}
@@ -37,7 +39,7 @@ func Test_IncrInt(t *testing.T) {
 		t.Errorf("SetInt got error: %v", err)
 	}
 
-	raph.SetStr("key_str", "str", 0)
+	_ = raph.SetStr("key_str", "str", 0)
 
 	if err := raph.IncrInt("key_fake"); err == nil {
 		t.Errorf("IncrInt want error")

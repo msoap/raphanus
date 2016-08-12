@@ -98,7 +98,7 @@ func Test_DictMethods02(t *testing.T) {
 func Test_validateDictParams(t *testing.T) {
 	raph := New("", 0)
 	raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0)
-	raph.SetStr("key_str", "value", 0)
+	_ = raph.SetStr("key_str", "value", 0)
 
 	if err := raph.validateDictParams("key", "k1"); err != nil {
 		t.Errorf("validateDictParams failed: %s", err)
