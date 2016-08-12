@@ -110,11 +110,7 @@ func (db *DB) fsLoad() (err error) {
 // fsSave - save cache to file
 func (db *DB) fsSave() (err error) {
 	db.RLock()
-	db.withLock = false // for common lock for save all keys
-	defer func() {
-		db.RUnlock()
-		db.withLock = true
-	}()
+	defer db.RUnlock()
 
 	file, err := os.Create(db.fsStorageName)
 	if err != nil {
