@@ -39,13 +39,13 @@ func Test_DictMethods01(t *testing.T) {
 		t.Errorf("List not equal, got: %v, expected: %v", val, raphanuscommon.DictValue{"k1": "v1"})
 	}
 
-	val, err = raph.GetDict("key_fake")
+	_, err = raph.GetDict("key_fake")
 	if err == nil {
 		t.Errorf("GetDict not exists key failed")
 	}
 
 	raph.SetInt("key_int", 33, 0)
-	val, err = raph.GetDict("key_int")
+	_, err = raph.GetDict("key_int")
 	if err == nil {
 		t.Errorf("GetDict check type failed")
 	}
