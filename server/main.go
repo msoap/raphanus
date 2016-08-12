@@ -44,8 +44,7 @@ func getConfig() (cfg config) {
 	}
 
 	if len(*authUserPass) > 0 {
-		// TODO: allow ":" in password
-		auth := strings.Split(*authUserPass, ":")
+		auth := strings.SplitN(*authUserPass, ":", 2)
 		if len(auth) == 2 && len(auth[0]) > 0 && len(auth[1]) > 0 {
 			cfg.user, cfg.password = auth[0], auth[1]
 		} else {
