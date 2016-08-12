@@ -6,6 +6,9 @@ func Test_UpdateInt(t *testing.T) {
 	raph := New("", 0)
 
 	raph.SetInt("key", 7, 0)
+	if err := raph.UpdateInt("key_fake", 8); err == nil {
+		t.Errorf("UpdateInt want error")
+	}
 	if err := raph.UpdateInt("key", 8); err != nil {
 		t.Errorf("UpdateInt got error: %v", err)
 	}
@@ -13,14 +16,28 @@ func Test_UpdateInt(t *testing.T) {
 	if v, err := raph.GetInt("key"); err != nil || v != 8 {
 		t.Error("UpdateInt failed")
 	}
+
+	if v, err := raph.GetInt("key_fake"); err == nil || v != 0 {
+		t.Error("GetInt want error")
+	}
+
+	raph.SetStr("key_str", "str", 0)
+	if _, err := raph.GetInt("key_str"); err == nil {
+		t.Error("GetInt want error for type")
+	}
 }
 
 func Test_IncrInt(t *testing.T) {
 	raph := New("", 0)
 
 	raph.SetInt("key", 7, 0)
+	raph.SetStr("key_str", "str", 0)
+
 	if err := raph.IncrInt("key_fake"); err == nil {
-		t.Errorf("IncrInt got error failed")
+		t.Errorf("IncrInt want error")
+	}
+	if err := raph.IncrInt("key_str"); err == nil {
+		t.Errorf("IncrInt type check failed")
 	}
 	if err := raph.IncrInt("key"); err != nil {
 		t.Errorf("IncrInt got error: %v", err)
@@ -28,6 +45,10 @@ func Test_IncrInt(t *testing.T) {
 
 	if v, err := raph.GetInt("key"); err != nil || v != 8 {
 		t.Error("IncrInt failed")
+	}
+
+	if v, err := raph.GetInt("key_fake"); err == nil || v != 0 {
+		t.Error("IncrInt want error")
 	}
 }
 

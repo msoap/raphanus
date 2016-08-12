@@ -9,7 +9,13 @@ import (
 func Test_StringMethods(t *testing.T) {
 	raph := New("", 0)
 
+	raph.SetInt("key_int", 10, 0)
 	raph.SetStr("key", "value", 0)
+
+	if _, err := raph.GetStr("key_int"); err == nil {
+		t.Error("GetStr check type failed")
+	}
+
 	vStr, err := raph.GetStr("key")
 	if err == raphanuscommon.ErrKeyNotExists {
 		t.Error("Got ErrKeyNotExists error")
