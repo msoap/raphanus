@@ -389,3 +389,46 @@ func (cli Client) UpdateList(key string, value raphanuscommon.ListValue) (err er
 
 	return checkCommonError(body)
 }
+
+// GetListItem - get item in list value by key and index
+func (cli Client) GetListItem(key string, idx int) (result string, err error) {
+	idxParam := "?idx=" + url.QueryEscape(strconv.Itoa(idx))
+	body, err := cli.httpGet(cli.address + APIVersion + "/list/item/" + url.QueryEscape(key) + idxParam)
+	if err != nil {
+		return "", err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputGetStr{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return "", err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return "", fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.ValueStr, nil
+}
+
+// SetListItem - set item in list value by key and index
+func (cli Client) SetListItem(key string, idx int, value string) (err error) {
+	idxParam := "?idx=" + url.QueryEscape(strconv.Itoa(idx))
+	body, err := cli.httpPut(cli.address+APIVersion+"/list/item/"+url.QueryEscape(key)+idxParam, []byte(value))
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
