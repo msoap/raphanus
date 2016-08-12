@@ -94,7 +94,11 @@ func (db *DB) fsLoad() (err error) {
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse dict: %s", parts[0], err)
 			}
-			db.SetDict(parts[0], dictVal, 0)
+
+			err = db.SetDict(parts[0], dictVal, 0)
+			if err != nil {
+				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+			}
 		default:
 			return fmt.Errorf("Load from file, file is damaged, key: '%s', unknown type: %s", parts[0], parts[1])
 		}

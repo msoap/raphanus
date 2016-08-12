@@ -23,16 +23,20 @@ func (db *DB) GetDict(key string) (value raphanuscommon.DictValue, err error) {
 }
 
 // SetDict - create/update dict value by key
-func (db *DB) SetDict(key string, value raphanuscommon.DictValue, ttl int) {
+func (db *DB) SetDict(key string, value raphanuscommon.DictValue, ttl int) error {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
 	}
 
+	if !isValidKey(key) {
+		return raphanuscommon.ErrKeyIsNotValid
+	}
+
 	db.data[key] = value
 	db.setTTL(key, ttl)
 
-	return
+	return nil
 }
 
 // UpdateDict - update dict value by exists key

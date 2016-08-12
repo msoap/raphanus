@@ -10,7 +10,10 @@ import (
 func Test_DictMethods01(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetDict("key", raphanuscommon.DictValue{"value": "v1"}, 0)
+	if err := raph.SetDict("key", raphanuscommon.DictValue{"value": "v1"}, 0); err != nil {
+		t.Errorf("SetDict failed: %v", err)
+	}
+
 	val, err := raph.GetDict("key")
 	if err != nil {
 		t.Errorf("GetDict failed: %v", err)
@@ -54,7 +57,9 @@ func Test_DictMethods01(t *testing.T) {
 func Test_DictMethods02(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0)
+	if err := raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0); err != nil {
+		t.Errorf("SetDict failed: %v", err)
+	}
 
 	valStr, err := raph.GetDictItem("key", "k1")
 	if err != nil {
@@ -97,7 +102,9 @@ func Test_DictMethods02(t *testing.T) {
 
 func Test_validateDictParams(t *testing.T) {
 	raph := New("", 0)
-	raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0)
+	if err := raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0); err != nil {
+		t.Errorf("SetDict failed: %v", err)
+	}
 	_ = raph.SetStr("key_str", "value", 0)
 
 	if err := raph.validateDictParams("key", "k1"); err != nil {

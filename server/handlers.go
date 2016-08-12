@@ -482,7 +482,10 @@ func (app *server) setDict(ctx echo.Context) error {
 	}
 
 	key := ctx.Param("key")
-	app.raphanus.SetDict(key, newDictValue, ttl)
+	err = app.raphanus.SetDict(key, newDictValue, ttl)
+	if err != nil {
+		return getJSONError(ctx, err)
+	}
 
 	return ctx.JSON(http.StatusOK, outputCommonOK)
 }
