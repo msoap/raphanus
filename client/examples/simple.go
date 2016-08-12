@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/msoap/raphanus/client"
+	"github.com/msoap/raphanus/common"
 )
 
 func main() {
@@ -26,9 +27,11 @@ func main() {
 	printIntKey(raph, "k1")
 
 	testStringValues(raph, "k3")
+	testListValues(raph)
 
 	printKeys(raph)
 	printLength(raph)
+
 	removeKey(raph, "k1")
 }
 
@@ -138,4 +141,30 @@ func testStringValues(raph raphanusclient.Client, key string) {
 		return
 	}
 	printStrKey(raph, key)
+}
+
+func testListValues(raph raphanusclient.Client) {
+	if err := raph.SetList("key_list_01", raphanuscommon.ListValue{"l1", "l2", "l3"}, 10); err != nil {
+		fmt.Printf("SetList got error: %s\n", err)
+		return
+	}
+
+	listVal, err := raph.GetList("key_list_01")
+	if err != nil {
+		fmt.Printf("GetList got error: %s\n", err)
+		return
+	}
+	fmt.Printf("List value: %v\n", listVal)
+
+	if err := raph.UpdateList("key_list_01", raphanuscommon.ListValue{"l1", "l2", "l3_new"}); err != nil {
+		fmt.Printf("UpdateList got error: %s\n", err)
+		return
+	}
+
+	listVal, err = raph.GetList("key_list_01")
+	if err != nil {
+		fmt.Printf("GetList got error: %s\n", err)
+		return
+	}
+	fmt.Printf("List new value: %v\n", listVal)
 }

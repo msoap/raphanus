@@ -48,3 +48,9 @@ type OutputGetStr struct {
 	OutputCommon
 	ValueStr string `json:"value_str"`
 }
+
+// OutputGetList - output for /list/:key
+type OutputGetList struct {
+	OutputCommon
+	ValueList ListValue `json:"value_list"`
+}

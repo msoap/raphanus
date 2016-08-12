@@ -180,7 +180,7 @@ func (cli Client) GetInt(key string) (int64, error) {
 		return 0, fmt.Errorf(resultRaw.ErrorMessage)
 	}
 
-	return resultRaw.ValueInt, err
+	return resultRaw.ValueInt, nil
 }
 
 // SetInt - set int value by key
@@ -277,7 +277,7 @@ func (cli Client) GetStr(key string) (string, error) {
 		return "", fmt.Errorf(resultRaw.ErrorMessage)
 	}
 
-	return resultRaw.ValueStr, err
+	return resultRaw.ValueStr, nil
 }
 
 // SetStr - set string value by key
@@ -303,6 +303,80 @@ func (cli Client) SetStr(key string, value string, ttl int) (err error) {
 // UpdateStr - update string value by key
 func (cli Client) UpdateStr(key string, value string) (err error) {
 	body, err := cli.httpPut(cli.address+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// List methods ------------------------------
+
+// GetList - get list value by key
+func (cli Client) GetList(key string) (result raphanuscommon.ListValue, err error) {
+	body, err := cli.httpGet(cli.address + APIVersion + "/list/" + url.QueryEscape(key))
+	if err != nil {
+		return result, err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	resultRaw := raphanuscommon.OutputGetList{}
+	err = json.NewDecoder(body).Decode(&resultRaw)
+	if err != nil {
+		return result, err
+	}
+	if resultRaw.ErrorCode != 0 {
+		return result, fmt.Errorf(resultRaw.ErrorMessage)
+	}
+
+	return resultRaw.ValueList, nil
+}
+
+// SetList - set list value by key
+func (cli Client) SetList(key string, value raphanuscommon.ListValue, ttl int) (err error) {
+	ttlParam := ""
+	if ttl > 0 {
+		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
+	}
+
+	valueJSON, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPost(cli.address+APIVersion+"/list/"+url.QueryEscape(key)+ttlParam, valueJSON)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if errClose := httpFinalize(body); errClose != nil {
+			err = errClose
+		}
+	}()
+
+	return checkCommonError(body)
+}
+
+// UpdateList - update list value by key
+func (cli Client) UpdateList(key string, value raphanuscommon.ListValue) (err error) {
+	valueJSON, err := json.Marshal(value)
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPut(cli.address+APIVersion+"/list/"+url.QueryEscape(key), valueJSON)
 	if err != nil {
 		return err
 	}

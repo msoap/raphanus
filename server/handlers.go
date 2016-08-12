@@ -331,18 +331,13 @@ result:
 	{"error_code":0,"value_list":["l1", "l2", "l3"]}
 */
 func (app *server) getList(ctx echo.Context) error {
-	type outputGetList struct {
-		raphanuscommon.OutputCommon
-		ValueList []string `json:"value_list"`
-	}
-
 	key := ctx.Param("key")
 	valueList, err := app.raphanus.GetList(key)
 	if err != nil {
 		return getJSONError(ctx, err)
 	}
 
-	result := outputGetList{ValueList: valueList}
+	result := raphanuscommon.OutputGetList{ValueList: valueList}
 	return ctx.JSON(http.StatusOK, result)
 }
 

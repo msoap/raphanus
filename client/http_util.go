@@ -44,6 +44,10 @@ func (cli Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.Read
 		return nil, err
 	}
 
+	if HTTPMethod == "POST" || HTTPMethod == "PUT" {
+		request.Header.Add("Content-Type", "application/json")
+	}
+
 	if len(cli.user) > 0 && len(cli.password) > 0 {
 		request.SetBasicAuth(cli.user, cli.password)
 	}
