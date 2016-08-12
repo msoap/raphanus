@@ -44,7 +44,7 @@ func Test_DictMethods01(t *testing.T) {
 		t.Errorf("GetDict not exists key failed")
 	}
 
-	raph.SetInt("key_int", 33, 0)
+	_ = raph.SetInt("key_int", 33, 0)
 	_, err = raph.GetDict("key_int")
 	if err == nil {
 		t.Errorf("GetDict check type failed")

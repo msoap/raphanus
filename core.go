@@ -5,6 +5,7 @@ package raphanus
 
 import (
 	"log"
+	"regexp"
 	"sync"
 
 	"github.com/msoap/raphanus/common"
@@ -112,4 +113,18 @@ func (db *DB) setTTL(key string, ttl int) {
 			})
 		}()
 	}
+}
+
+var validKeyRe = regexp.MustCompile(`^[\w\-\.]+$`)
+
+func isValidKey(key string) bool {
+	if len(key) == 0 {
+		return false
+	}
+
+	if ok := validKeyRe.MatchString(key); !ok {
+		return false
+	}
+
+	return true
 }

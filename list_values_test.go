@@ -11,7 +11,7 @@ import (
 func Test_ListMethods01(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetInt("key_int", 7, 0)
+	_ = raph.SetInt("key_int", 7, 0)
 	raph.SetList("key", []string{"value", "2"}, 1)
 	if _, err := raph.GetList("key_int"); err == nil {
 		t.Errorf("GetList check type failed")
@@ -36,7 +36,7 @@ func Test_ListMethods01(t *testing.T) {
 func Test_ListMethods02(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetInt("key_int", 7, 0)
+	_ = raph.SetInt("key_int", 7, 0)
 	raph.SetList("key", []string{"value", "2"}, 0)
 
 	if err := raph.SetListItem("key_fake", 1, "3"); err == nil {

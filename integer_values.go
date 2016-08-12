@@ -23,17 +23,20 @@ func (db *DB) GetInt(key string) (int64, error) {
 }
 
 // SetInt - create/update integer value by key
-func (db *DB) SetInt(key string, value int64, ttl int) {
+func (db *DB) SetInt(key string, value int64, ttl int) error {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
 	}
 
-	// TODO: validate key - "\t" damage file format
+	if !isValidKey(key) {
+		return raphanuscommon.ErrKeyIsNotValid
+	}
+
 	db.data[key] = value
 	db.setTTL(key, ttl)
 
-	return
+	return nil
 }
 
 // UpdateInt - update integer value by exists key

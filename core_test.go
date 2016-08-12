@@ -21,7 +21,10 @@ func Test_coreSimple01(t *testing.T) {
 		t.Errorf("GetStr:\ngot:      %s\nexpected: %s", vStr, "value")
 	}
 
-	raph.SetInt("key01", 7, 0)
+	if err := raph.SetInt("key01", 7, 0); err != nil {
+		t.Errorf("SetInt got error: %v", err)
+	}
+
 	vInt, err := raph.GetInt("key01")
 	if err == raphanuscommon.ErrKeyNotExists {
 		t.Error("Got ErrKeyNotExists error")
@@ -52,5 +55,33 @@ func Test_coreSimple01(t *testing.T) {
 	}
 	if len := raph.Len(); len != 1 {
 		t.Errorf("Len() after remove failed:\ngot:      %d\nexpected: %d", len, 1)
+	}
+}
+
+func Test_isValidKey(t *testing.T) {
+	cases := []struct {
+		key string
+		ok  bool
+	}{
+		{"", false},
+		{" ", false},
+		{" key", false},
+		{"key ", false},
+		{" key ", false},
+		{" k ey ", false},
+		{"k ey", false},
+		{"key", true},
+		{"key.p", true},
+		{"key-p", true},
+		{"key_p", true},
+		{"123", true},
+		{"k.123", true},
+	}
+
+	for i, item := range cases {
+		ok := isValidKey(item.key)
+		if ok != item.ok {
+			t.Errorf("%d. isValidKey failed, got: %v, expected: %v", i, ok, item.ok)
+		}
 	}
 }

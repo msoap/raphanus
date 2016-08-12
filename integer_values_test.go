@@ -5,7 +5,10 @@ import "testing"
 func Test_UpdateInt(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetInt("key", 7, 0)
+	if err := raph.SetInt("key", 7, 0); err != nil {
+		t.Errorf("SetInt got error: %v", err)
+	}
+
 	if err := raph.UpdateInt("key_fake", 8); err == nil {
 		t.Errorf("UpdateInt want error")
 	}
@@ -30,7 +33,10 @@ func Test_UpdateInt(t *testing.T) {
 func Test_IncrInt(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetInt("key", 7, 0)
+	if err := raph.SetInt("key", 7, 0); err != nil {
+		t.Errorf("SetInt got error: %v", err)
+	}
+
 	raph.SetStr("key_str", "str", 0)
 
 	if err := raph.IncrInt("key_fake"); err == nil {
@@ -55,7 +61,10 @@ func Test_IncrInt(t *testing.T) {
 func Test_DecrInt(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetInt("key", 7, 0)
+	if err := raph.SetInt("key", 7, 0); err != nil {
+		t.Errorf("SetInt got error: %v", err)
+	}
+
 	if err := raph.DecrInt("key_fake"); err == nil {
 		t.Errorf("DecrInt got error failed")
 	}

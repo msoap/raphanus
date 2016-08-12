@@ -20,4 +20,5 @@ var (
 	ErrDictKeyNotExists = RaphError{5, "Dict, key not exists"}
 	ErrDictKeyIsEmpty   = RaphError{6, "Key or dict key is empty"}
 	ErrTTLIsntCorrect   = RaphError{7, "TTL parameter isn't correct"}
+	ErrKeyIsNotValid    = RaphError{8, "Key is not valid"}
 )
