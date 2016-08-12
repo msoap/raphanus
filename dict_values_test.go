@@ -20,6 +20,11 @@ func Test_DictMethods01(t *testing.T) {
 		t.Errorf("List not equal, got: %v, expected: %v", val, raphanuscommon.DictValue{"value": "v1"})
 	}
 
+	err = raph.UpdateDict("key_fake", raphanuscommon.DictValue{"k1": "v1"})
+	if err == nil {
+		t.Errorf("UpdateDict fake key failed")
+	}
+
 	err = raph.UpdateDict("key", raphanuscommon.DictValue{"k1": "v1"})
 	if err != nil {
 		t.Errorf("UpdateDict failed: %v", err)
@@ -32,6 +37,17 @@ func Test_DictMethods01(t *testing.T) {
 
 	if !reflect.DeepEqual(val, raphanuscommon.DictValue{"k1": "v1"}) {
 		t.Errorf("List not equal, got: %v, expected: %v", val, raphanuscommon.DictValue{"k1": "v1"})
+	}
+
+	val, err = raph.GetDict("key_fake")
+	if err == nil {
+		t.Errorf("GetDict not exists key failed")
+	}
+
+	raph.SetInt("key_int", 33, 0)
+	val, err = raph.GetDict("key_int")
+	if err == nil {
+		t.Errorf("GetDict check type failed")
 	}
 }
 
@@ -67,5 +83,35 @@ func Test_DictMethods02(t *testing.T) {
 	_, err = raph.GetDictItem("key", "k1")
 	if err != raphanuscommon.ErrDictKeyNotExists {
 		t.Errorf("Not error after RemoveDictItem: %v", err)
+	}
+}
+
+func Test_validateDictParams(t *testing.T) {
+	raph := New("", 0)
+	raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0)
+	raph.SetStr("key_str", "value", 0)
+
+	if err := raph.validateDictParams("key", "k1"); err != nil {
+		t.Errorf("validateDictParams failed: %s", err)
+	}
+
+	if err := raph.validateDictParams("key", "k1_fake"); err == nil {
+		t.Errorf("1. validateDictParams want error")
+	}
+
+	if err := raph.validateDictParams("key_fake", "k1"); err == nil {
+		t.Errorf("2. validateDictParams want error")
+	}
+
+	if err := raph.validateDictParams("", "k1"); err == nil {
+		t.Errorf("3. validateDictParams want error")
+	}
+
+	if err := raph.validateDictParams("key", ""); err == nil {
+		t.Errorf("4. validateDictParams want error")
+	}
+
+	if err := raph.validateDictParams("key_str", "k1"); err == nil {
+		t.Errorf("5. validateDictParams want error")
 	}
 }
