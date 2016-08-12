@@ -2,11 +2,8 @@ package raphanus
 
 import "github.com/msoap/raphanus/common"
 
-// ListValue - list value type
-type ListValue []string
-
 // GetList - get list value by key
-func (db *DB) GetList(key string) (value ListValue, err error) {
+func (db *DB) GetList(key string) (value raphanuscommon.ListValue, err error) {
 	if db.withLock {
 		db.RLock()
 		defer db.RUnlock()
@@ -17,7 +14,7 @@ func (db *DB) GetList(key string) (value ListValue, err error) {
 		return value, raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok = rawVal.(ListValue)
+	value, ok = rawVal.(raphanuscommon.ListValue)
 	if !ok {
 		return value, raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -26,7 +23,7 @@ func (db *DB) GetList(key string) (value ListValue, err error) {
 }
 
 // SetList - create/update list value by key
-func (db *DB) SetList(key string, value ListValue, ttl int) {
+func (db *DB) SetList(key string, value raphanuscommon.ListValue, ttl int) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -39,7 +36,7 @@ func (db *DB) SetList(key string, value ListValue, ttl int) {
 }
 
 // UpdateList - update list value by exists key
-func (db *DB) UpdateList(key string, value ListValue) (err error) {
+func (db *DB) UpdateList(key string, value raphanuscommon.ListValue) (err error) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -66,7 +63,7 @@ func (db *DB) GetListItem(key string, index int) (string, error) {
 		return "", raphanuscommon.ErrKeyNotExists
 	}
 
-	valueList, ok := rawVal.(ListValue)
+	valueList, ok := rawVal.(raphanuscommon.ListValue)
 	if !ok {
 		return "", raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -91,7 +88,7 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	valueList, ok := rawVal.(ListValue)
+	valueList, ok := rawVal.(raphanuscommon.ListValue)
 	if !ok {
 		return raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -100,6 +97,6 @@ func (db *DB) SetListItem(key string, index int, value string) error {
 		return raphanuscommon.ErrListOutOfRange
 	}
 
-	db.data[key].(ListValue)[index] = value
+	db.data[key].(raphanuscommon.ListValue)[index] = value
 	return nil
 }

@@ -10,17 +10,17 @@ import (
 func Test_DictMethods01(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetDict("key", DictValue{"value": "v1"}, 0)
+	raph.SetDict("key", raphanuscommon.DictValue{"value": "v1"}, 0)
 	val, err := raph.GetDict("key")
 	if err != nil {
 		t.Errorf("GetDict failed: %v", err)
 	}
 
-	if !reflect.DeepEqual(val, DictValue{"value": "v1"}) {
-		t.Errorf("List not equal, got: %v, expected: %v", val, DictValue{"value": "v1"})
+	if !reflect.DeepEqual(val, raphanuscommon.DictValue{"value": "v1"}) {
+		t.Errorf("List not equal, got: %v, expected: %v", val, raphanuscommon.DictValue{"value": "v1"})
 	}
 
-	err = raph.UpdateDict("key", DictValue{"k1": "v1"})
+	err = raph.UpdateDict("key", raphanuscommon.DictValue{"k1": "v1"})
 	if err != nil {
 		t.Errorf("UpdateDict failed: %v", err)
 	}
@@ -30,15 +30,15 @@ func Test_DictMethods01(t *testing.T) {
 		t.Errorf("GetDict failed: %v", err)
 	}
 
-	if !reflect.DeepEqual(val, DictValue{"k1": "v1"}) {
-		t.Errorf("List not equal, got: %v, expected: %v", val, DictValue{"k1": "v1"})
+	if !reflect.DeepEqual(val, raphanuscommon.DictValue{"k1": "v1"}) {
+		t.Errorf("List not equal, got: %v, expected: %v", val, raphanuscommon.DictValue{"k1": "v1"})
 	}
 }
 
 func Test_DictMethods02(t *testing.T) {
 	raph := New("", 0)
 
-	raph.SetDict("key", DictValue{"k1": "v1", "k2": "v2"}, 0)
+	raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0)
 
 	valStr, err := raph.GetDictItem("key", "k1")
 	if err != nil {

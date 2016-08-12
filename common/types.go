@@ -1,5 +1,11 @@
 package raphanuscommon
 
+// ListValue - list value type
+type ListValue []string
+
+// DictValue - dict value type
+type DictValue map[string]string
+
 // Stat - some stat: version, memory, calls count, etc
 type Stat struct {
 	Version string `json:"version"`

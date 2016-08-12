@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/msoap/raphanus"
 	"github.com/msoap/raphanus/common"
 )
 
@@ -452,7 +451,7 @@ result:
 func (app *server) getDict(ctx echo.Context) error {
 	type outputGetDict struct {
 		raphanuscommon.OutputCommon
-		ValueDict raphanus.DictValue `json:"value_dict"`
+		ValueDict raphanuscommon.DictValue `json:"value_dict"`
 	}
 
 	key := ctx.Param("key")
@@ -473,7 +472,7 @@ result:
 	{"error_code":0}
 */
 func (app *server) setDict(ctx echo.Context) error {
-	newDictValue := raphanus.DictValue{}
+	newDictValue := raphanuscommon.DictValue{}
 	if err := ctx.Bind(&newDictValue); err != nil {
 		return getJSONError(ctx, err)
 	}
@@ -497,7 +496,7 @@ result:
 	{"error_code":0}
 */
 func (app *server) updateDict(ctx echo.Context) error {
-	newDictValue := raphanus.DictValue{}
+	newDictValue := raphanuscommon.DictValue{}
 	if err := ctx.Bind(&newDictValue); err != nil {
 		return getJSONError(ctx, err)
 	}

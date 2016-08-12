@@ -2,11 +2,8 @@ package raphanus
 
 import "github.com/msoap/raphanus/common"
 
-// DictValue - dict value type
-type DictValue map[string]string
-
 // GetDict - get dict value by key
-func (db *DB) GetDict(key string) (value DictValue, err error) {
+func (db *DB) GetDict(key string) (value raphanuscommon.DictValue, err error) {
 	if db.withLock {
 		db.RLock()
 		defer db.RUnlock()
@@ -17,7 +14,7 @@ func (db *DB) GetDict(key string) (value DictValue, err error) {
 		return value, raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok = rawVal.(DictValue)
+	value, ok = rawVal.(raphanuscommon.DictValue)
 	if !ok {
 		return value, raphanuscommon.ErrKeyTypeMissmatch
 	}
@@ -26,7 +23,7 @@ func (db *DB) GetDict(key string) (value DictValue, err error) {
 }
 
 // SetDict - create/update dict value by key
-func (db *DB) SetDict(key string, value DictValue, ttl int) {
+func (db *DB) SetDict(key string, value raphanuscommon.DictValue, ttl int) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -39,7 +36,7 @@ func (db *DB) SetDict(key string, value DictValue, ttl int) {
 }
 
 // UpdateDict - update dict value by exists key
-func (db *DB) UpdateDict(key string, value DictValue) (err error) {
+func (db *DB) UpdateDict(key string, value raphanuscommon.DictValue) (err error) {
 	if db.withLock {
 		db.Lock()
 		defer db.Unlock()
@@ -65,7 +62,7 @@ func (db *DB) GetDictItem(key string, dictKey string) (string, error) {
 		return "", err
 	}
 
-	return db.data[key].(DictValue)[dictKey], nil
+	return db.data[key].(raphanuscommon.DictValue)[dictKey], nil
 }
 
 // SetDictItem - set item on dict value by exists key
@@ -79,7 +76,7 @@ func (db *DB) SetDictItem(key, dictKey, dictValue string) error {
 		return err
 	}
 
-	db.data[key].(DictValue)[dictKey] = dictValue
+	db.data[key].(raphanuscommon.DictValue)[dictKey] = dictValue
 
 	return nil
 }
@@ -95,7 +92,7 @@ func (db *DB) RemoveDictItem(key, dictKey string) error {
 		return err
 	}
 
-	delete(db.data[key].(DictValue), dictKey)
+	delete(db.data[key].(raphanuscommon.DictValue), dictKey)
 
 	return nil
 }
@@ -110,7 +107,7 @@ func (db *DB) validateDictParams(key, dictKey string) error {
 		return raphanuscommon.ErrKeyNotExists
 	}
 
-	value, ok := rawVal.(DictValue)
+	value, ok := rawVal.(raphanuscommon.DictValue)
 	if !ok {
 		return raphanuscommon.ErrKeyTypeMissmatch
 	}

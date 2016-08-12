@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/msoap/raphanus/common"
 )
 
 /*
@@ -57,7 +59,7 @@ func (db *DB) fsLoad() (err error) {
 			}
 			db.SetInt(parts[0], intVal, 0)
 		case "str":
-			listVal := make(ListValue, 0)
+			listVal := make(raphanuscommon.ListValue, 0)
 			err = json.Unmarshal([]byte(parts[2]), &listVal)
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse string: %s", parts[0], err)
@@ -68,14 +70,14 @@ func (db *DB) fsLoad() (err error) {
 			strVal := listVal[0]
 			db.SetStr(parts[0], strVal, 0)
 		case "list":
-			listVal := make(ListValue, 0)
+			listVal := make(raphanuscommon.ListValue, 0)
 			err = json.Unmarshal([]byte(parts[2]), &listVal)
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse list: %s", parts[0], err)
 			}
 			db.SetList(parts[0], listVal, 0)
 		case "dict":
-			dictVal := make(DictValue)
+			dictVal := make(raphanuscommon.DictValue)
 			err = json.Unmarshal([]byte(parts[2]), &dictVal)
 			if err != nil {
 				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse dict: %s", parts[0], err)
@@ -121,14 +123,14 @@ func (db *DB) fsSave() (err error) {
 				return err
 			}
 			row[2] = string(byteVal)
-		case ListValue:
+		case raphanuscommon.ListValue:
 			row[1] = "list"
 			byteVal, err := json.Marshal(value)
 			if err != nil {
 				return err
 			}
 			row[2] = string(byteVal)
-		case DictValue:
+		case raphanuscommon.DictValue:
 			row[1] = "dict"
 			byteVal, err := json.Marshal(value)
 			if err != nil {
