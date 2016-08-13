@@ -18,6 +18,9 @@ run-server:
 run-client-example:
 	go run client/examples/simple.go
 
+run-benchmark:
+	go test -short -bench .
+
 watch-and-restart-server:
 	reflex -s make run-server
 

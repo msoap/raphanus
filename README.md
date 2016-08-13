@@ -111,19 +111,19 @@ func main() {
 	$ docker run --name redis --publish --rm 6379:6379 redis
     $ go test -bench Benchmark
     
-    Benchmark_raphanusServer-4             	    2000       	    798140 ns/op
-    Benchmark_raphanusEmbed-4              	 1000000       	      1574 ns/op
-    Benchmark_redis-4                      	    2000       	    579296 ns/op
-    Benchmark_raphanusServerTTL-4          	    2000       	   1039152 ns/op
-    Benchmark_raphanusEmbedTTL-4           	  200000       	     16663 ns/op
-    Benchmark_redisTTL-4                   	    2000       	    793976 ns/op
+    Benchmark_raphanusServer-4             	    2000       	    885763 ns/op
+    Benchmark_raphanusEmbed-4              	 1000000       	      2265 ns/op
+    Benchmark_redis-4                      	    3000       	    522932 ns/op
+    Benchmark_raphanusServerTTL-4          	    2000       	    984618 ns/op
+    Benchmark_raphanusEmbedTTL-4           	  300000       	      8023 ns/op
+    Benchmark_redisTTL-4                   	    2000       	    725928 ns/op
 
 ### local raphanus and redis servers (on MacOS)
 
     $ go test -bench Benchmark
-    Benchmark_raphanusServer-4             	    5000       	    329098 ns/op
-    Benchmark_raphanusEmbed-4              	 1000000       	      1567 ns/op
-    Benchmark_redis-4                      	   10000       	    124527 ns/op
-    Benchmark_raphanusServerTTL-4          	    3000       	    355537 ns/op
-    Benchmark_raphanusEmbedTTL-4           	  200000       	     16534 ns/op
-    Benchmark_redisTTL-4                   	   10000       	    172033 ns/op
+    Benchmark_raphanusServer-4             	    5000       	    339360 ns/op
+    Benchmark_raphanusEmbed-4              	 1000000       	      2164 ns/op
+    Benchmark_redis-4                      	   10000       	    130194 ns/op
+    Benchmark_raphanusServerTTL-4          	    5000       	    360447 ns/op
+    Benchmark_raphanusEmbedTTL-4           	  300000       	      8403 ns/op
+    Benchmark_redisTTL-4                   	   10000       	    152977 ns/op
