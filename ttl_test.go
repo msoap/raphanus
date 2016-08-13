@@ -2,6 +2,7 @@ package raphanus
 
 import (
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -69,13 +70,21 @@ func Test_TTLqueue(t *testing.T) {
 	queue.add(ttlQueueItem{key: &k0, unixtime: ttl2unixtime(0)})
 	queue.add(ttlQueueItem{key: &k2, unixtime: ttl2unixtime(2)})
 
+	mutex := new(sync.Mutex)
 	result := []string{}
 	queue.handle(func(keys []string) {
-		result = append(result, strings.Join(keys, "/"))
+		go func() {
+			mutex.Lock()
+			result = append(result, strings.Join(keys, "/"))
+			mutex.Unlock()
+		}()
 	})
 
 	time.Sleep(4*time.Second + 100*time.Millisecond)
+
+	mutex.Lock()
 	if strings.Join(result, ",") != "0,1,2/2,3,4" {
 		t.Errorf("ttlQueue failed, got: %s, expected: %s", strings.Join(result, ","), "0,1,2/2,3,4")
 	}
+	mutex.Unlock()
 }
