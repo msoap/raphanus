@@ -103,7 +103,7 @@ func (db *DB) setTTL(key string, ttl int) {
 	if ttl > 0 {
 		go func() {
 			db.ttlQueue.add(ttlQueueItem{key: &key, unixtime: ttl2unixtime(ttl)})
-			db.ttlQueue.run(func(keys []string) {
+			db.ttlQueue.handle(func(keys []string) {
 				db.Lock()
 				defer db.Unlock()
 

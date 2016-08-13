@@ -3,9 +3,6 @@ package raphanus
 import (
 	"strings"
 	"testing"
-	"time"
-
-	"github.com/msoap/raphanus/common"
 )
 
 func Test_ListMethods01(t *testing.T) {
@@ -33,10 +30,8 @@ func Test_ListMethods01(t *testing.T) {
 		t.Errorf("List not equal, got: %v, expected: %v", val, []string{"value", "2"})
 	}
 
-	time.Sleep(time.Second + 100*time.Millisecond)
-	_, err = raph.GetList("key")
-	if err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+	if _, err := raph.GetList("key_fake"); err == nil {
+		t.Error("GetList check exists key failed")
 	}
 }
 

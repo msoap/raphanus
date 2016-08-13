@@ -1,76 +1,81 @@
 package raphanus
 
 import (
-	"sort"
+	"strings"
 	"testing"
+	"time"
+
+	"github.com/msoap/raphanus/common"
 )
 
-type ttlList []ttlQueueItem
-
-func (t ttlList) Len() int           { return len(t) }
-func (t ttlList) Swap(i, j int)      { t[i], t[j] = t[j], t[i] }
-func (t ttlList) Less(i, j int) bool { return t[i].unixtime > t[j].unixtime }
-
-func Test_sortSortedListWithNewLastItem(t *testing.T) {
-	str := "str"
-	cases := []struct {
-		list []ttlQueueItem
-	}{
-		{list: []ttlQueueItem{
-			{10, &str},
-			{7, &str},
-			{3, &str},
-			{1, &str},
-		}},
-		{list: []ttlQueueItem{
-			{10, &str},
-			{7, &str},
-			{3, &str},
-			{10, &str},
-		}},
-		{list: []ttlQueueItem{
-			{10, &str},
-			{7, &str},
-			{3, &str},
-			{11, &str},
-		}},
-		{list: []ttlQueueItem{
-			{10, &str},
-			{7, &str},
-			{3, &str},
-			{5, &str},
-		}},
-		{list: []ttlQueueItem{
-			{10, &str},
-			{7, &str},
-			{3, &str},
-			{8, &str},
-		}},
+func Test_TTL(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
 	}
 
-	for i, item := range cases {
-		ttlQueue := newTTLQueue()
-		ttlQueue.queue = make(ttlList, len(item.list))
-		copy(ttlQueue.queue, item.list)
-		ttlQueue.sortSortedListWithNewLastItem()
+	raph := New("", 0)
 
-		sort.Sort(ttlList(item.list))
+	_ = raph.SetInt("key01", 42, 5)
+	_ = raph.SetInt("key02", 43, 2)
+	_ = raph.SetInt("key03", 44, 1)
 
-		if !isEqualLists(ttlQueue.queue, item.list) {
-			t.Errorf("%d. sortSortedListWithNewLastItem failed", i)
-		}
+	time.Sleep(time.Second + 100*time.Millisecond)
+
+	if _, err := raph.GetInt("key01"); err != nil {
+		t.Error("TTL dont work")
+	}
+	if _, err := raph.GetInt("key02"); err != nil {
+		t.Error("TTL dont work")
+	}
+	if _, err := raph.GetInt("key03"); err != raphanuscommon.ErrKeyNotExists {
+		t.Error("TTL dont work")
+	}
+
+	time.Sleep(time.Second + 100*time.Millisecond)
+	if _, err := raph.GetInt("key01"); err != nil {
+		t.Error("TTL dont work")
+	}
+	if _, err := raph.GetInt("key02"); err != raphanuscommon.ErrKeyNotExists {
+		t.Error("TTL dont work")
+	}
+	if _, err := raph.GetInt("key03"); err != raphanuscommon.ErrKeyNotExists {
+		t.Error("TTL dont work")
+	}
+
+	time.Sleep(3*time.Second + 100*time.Millisecond)
+	if _, err := raph.GetInt("key01"); err != raphanuscommon.ErrKeyNotExists {
+		t.Error("TTL dont work")
+	}
+	if _, err := raph.GetInt("key02"); err != raphanuscommon.ErrKeyNotExists {
+		t.Error("TTL dont work")
+	}
+	if _, err := raph.GetInt("key03"); err != raphanuscommon.ErrKeyNotExists {
+		t.Error("TTL dont work")
 	}
 }
 
-func isEqualLists(l1, l2 []ttlQueueItem) bool {
-	if len(l1) != len(l2) {
-		return false
-	}
-	for i := range l1 {
-		if l1[i].unixtime != l2[i].unixtime {
-			return false
-		}
+func Test_TTLqueue(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
 	}
 
-	return true
+	queue := newTTLQueue()
+	k0, k1, k2, k3, k4 := "0", "1", "2", "3", "4"
+
+	queue.add(ttlQueueItem{key: &k1, unixtime: ttl2unixtime(1)})
+	queue.add(ttlQueueItem{key: &k4, unixtime: ttl2unixtime(4)})
+	queue.add(ttlQueueItem{key: &k2, unixtime: ttl2unixtime(2)})
+	queue.add(ttlQueueItem{key: &k3, unixtime: ttl2unixtime(3)})
+	queue.add(ttlQueueItem{key: &k0, unixtime: ttl2unixtime(0)})
+	queue.add(ttlQueueItem{key: &k2, unixtime: ttl2unixtime(2)})
+
+	result := []string{}
+	queue.handle(func(keys []string) {
+		result = append(result, strings.Join(keys, "/"))
+	})
+
+	time.Sleep(4*time.Second + 100*time.Millisecond)
+	if strings.Join(result, ",") != "0,1,2/2,3,4" {
+		t.Errorf("ttlQueue failed, got: %s, expected: %s", strings.Join(result, ","), "0,1,2/2,3,4")
+	}
 }

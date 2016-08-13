@@ -1,6 +1,7 @@
 package raphanus
 
 import (
+	"container/heap"
 	"sync"
 	"time"
 )
@@ -11,109 +12,103 @@ type ttlQueueItem struct {
 }
 
 type ttlQueue struct {
-	queue []ttlQueueItem
-	timer *time.Timer
+	queue         []ttlQueueItem // for container/heap
+	forNextRemove []ttlQueueItem // elements with the minimum and the same unixtime (for removing)
+	timer         *time.Timer
 	*sync.Mutex
 }
 
+// heap.Interface
+func (ttlQ *ttlQueue) Len() int           { return len(ttlQ.queue) }
+func (ttlQ *ttlQueue) Swap(i, j int)      { ttlQ.queue[i], ttlQ.queue[j] = ttlQ.queue[j], ttlQ.queue[i] }
+func (ttlQ *ttlQueue) Less(i, j int) bool { return ttlQ.queue[i].unixtime < ttlQ.queue[j].unixtime }
+
+func (ttlQ *ttlQueue) Push(value interface{}) {
+	ttlQ.queue = append(ttlQ.queue, value.(ttlQueueItem))
+}
+
+func (ttlQ *ttlQueue) Pop() interface{} {
+	length := len(ttlQ.queue)
+	item := ttlQ.queue[length-1]
+	ttlQ.queue = ttlQ.queue[0 : length-1]
+	return item
+}
+
+// newTTLQueue - get TTL queue
 func newTTLQueue() ttlQueue {
-	return ttlQueue{
+	ttlQ := ttlQueue{
 		Mutex: new(sync.Mutex),
 	}
+	heap.Init(&ttlQ)
+	return ttlQ
 }
 
 func ttl2unixtime(ttl int) int64 {
 	return time.Now().Add(time.Duration(ttl) * time.Second).Unix()
 }
 
-func (ttlQ *ttlQueue) sortSortedListWithNewLastItem() {
-	length := len(ttlQ.queue)
-	if length <= 1 {
-		return
-	}
-
-	lastItem := ttlQ.queue[length-1]
-	if lastItem.unixtime <= ttlQ.queue[length-2].unixtime {
-		// already sorted
-		return
-	}
-
-	// binary search index for insert new element
-	searchIdx := 0
-	firstIdx, lastIdx := 0, length-2
-
-	if lastItem.unixtime < ttlQ.queue[0].unixtime {
-
-		for lastIdx-firstIdx > 1 {
-			halfIdx := firstIdx + (lastIdx-firstIdx)/2
-			if lastItem.unixtime <= ttlQ.queue[halfIdx].unixtime {
-				firstIdx = halfIdx
-			} else if lastItem.unixtime > ttlQ.queue[halfIdx].unixtime {
-				lastIdx = halfIdx
-			}
-		}
-		searchIdx = lastIdx - 1
-
-	} else {
-		// is biggest item - move to 0-th item
-		searchIdx = -1
-	}
-
-	// shift sub-slice to end of list, and insert new element
-	copy(ttlQ.queue[searchIdx+2:length], ttlQ.queue[searchIdx+1:length-1])
-	ttlQ.queue[searchIdx+1] = lastItem
-
-	return
-}
-
 func (ttlQ *ttlQueue) add(item ttlQueueItem) {
 	ttlQ.Lock()
 	defer ttlQ.Unlock()
 
-	ttlQ.queue = append(ttlQ.queue, item)
-	ttlQ.sortSortedListWithNewLastItem()
-}
-
-func (ttlQ *ttlQueue) removeLast(n int) {
-	ttlQ.queue = ttlQ.queue[:len(ttlQ.queue)-n]
+	heap.Push(ttlQ, item)
 }
 
 // run - handle ttl queue
-func (ttlQ *ttlQueue) run(fn func([]string)) {
+func (ttlQ *ttlQueue) handle(fn func([]string)) {
 	ttlQ.Lock()
 	defer ttlQ.Unlock()
 
 	if len(ttlQ.queue) == 0 {
 		return
 	}
-	if ttlQ.timer != nil {
-		ttlQ.timer.Stop()
+
+	// if timer is running - stop it
+	// and return items for removing back to the queue
+	if ttlQ.timer != nil && ttlQ.timer.Stop() && len(ttlQ.forNextRemove) > 0 {
+		for _, item := range ttlQ.forNextRemove {
+			heap.Push(ttlQ, item)
+		}
+		ttlQ.forNextRemove = ttlQ.forNextRemove[:0]
 	}
 
-	lastItem := ttlQ.queue[len(ttlQ.queue)-1]
-	duration := lastItem.unixtime - time.Now().Unix()
-	theSameLastCnt := 1
-	keysForDelete := []string{*lastItem.key}
-	prevIndex := len(ttlQ.queue) - theSameLastCnt - 1
-	for prevIndex >= 0 && lastItem.unixtime == ttlQ.queue[prevIndex].unixtime {
-		keysForDelete = append(keysForDelete, *(ttlQ.queue[prevIndex].key))
-		theSameLastCnt++
-		prevIndex--
+	minItem := heap.Pop(ttlQ).(ttlQueueItem)
+	duration := minItem.unixtime - time.Now().Unix()
+	ttlQ.forNextRemove = append(ttlQ.forNextRemove, minItem)
+	for len(ttlQ.queue) > 0 && minItem.unixtime == ttlQ.queue[0].unixtime {
+		nextSameItem := heap.Pop(ttlQ).(ttlQueueItem)
+		ttlQ.forNextRemove = append(ttlQ.forNextRemove, nextSameItem)
 	}
 
 	if duration <= 0 {
-		// ttl at this time is 0, remove from queue and handle next keys
-		ttlQ.removeLast(theSameLastCnt)
-		go ttlQ.run(fn)
+		// ttl at this time is 0, handle next keys
+		go func() {
+			ttlQ.exec(fn)
+			ttlQ.handle(fn)
+		}()
 		return
 	}
 
 	ttlQ.timer = time.AfterFunc(time.Duration(duration)*time.Second, func() {
-		ttlQ.Lock()
-		defer ttlQ.Unlock()
-
-		ttlQ.removeLast(theSameLastCnt)
-		go fn(keysForDelete)
-		go ttlQ.run(fn) // handle next keys with ttl
+		go func() {
+			ttlQ.exec(fn)
+			ttlQ.handle(fn)
+		}()
 	})
+}
+
+// exec - remove keys and clear ttlQ.forNextRemove
+func (ttlQ *ttlQueue) exec(fn func([]string)) {
+	ttlQ.Lock()
+	defer ttlQ.Unlock()
+
+	if len(ttlQ.forNextRemove) == 0 {
+		return
+	}
+	keys := []string{}
+	for _, item := range ttlQ.forNextRemove {
+		keys = append(keys, *item.key)
+	}
+	ttlQ.forNextRemove = ttlQ.forNextRemove[:0]
+	go fn(keys)
 }
