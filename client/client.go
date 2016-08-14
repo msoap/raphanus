@@ -65,7 +65,7 @@ func checkCommonError(body io.Reader) error {
 	return nil
 }
 
-// Stat - get some stat from server: version, memory, calls count, etc
+// Stat - get some stat from server: version, memory, GC, etc
 func (cli Client) Stat() (result raphanuscommon.Stat, err error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/stat")
 	if err != nil {

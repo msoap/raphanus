@@ -6,9 +6,15 @@ type ListValue []string
 // DictValue - dict value type
 type DictValue map[string]string
 
-// Stat - some stat: version, memory, calls count, etc
+// Stat - some stat: version, memory, GC, etc
 type Stat struct {
-	Version string `json:"version"`
+	Version        string `json:"version"`
+	MemAlloc       uint64 `json:"mem_alloc"`
+	MemTotalAlloc  uint64 `json:"mem_total_alloc"`
+	MemMallocs     uint64 `json:"mem_malloc"`
+	MemFrees       uint64 `json:"mem_frees"`
+	MemHeapObjects uint64 `json:"mem_heap_objects"`
+	GCPauseTotalNs uint64 `json:"gc_pause_total_ns"`
 }
 
 // JSON types for responses from server

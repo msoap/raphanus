@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/msoap/raphanus/client"
 	"github.com/msoap/raphanus/common"
@@ -43,7 +42,15 @@ func printStat(raph raphanusclient.Client) {
 		return
 	}
 
-	fmt.Printf("Stat: %#v\n", stat)
+	fmt.Printf("Stat (version: %s):\n  MemAlloc: %d b\n  MemTotalAlloc: %d b\n  MemMallocs: %d\n  MemFrees: %d\n  MemHeapObjects: %d\n  GCPauseTotalNs: %d\n",
+		stat.Version,
+		stat.MemAlloc,
+		stat.MemTotalAlloc,
+		stat.MemMallocs,
+		stat.MemFrees,
+		stat.MemHeapObjects,
+		stat.GCPauseTotalNs,
+	)
 }
 
 func printKeys(raph raphanusclient.Client) {
@@ -53,7 +60,7 @@ func printKeys(raph raphanusclient.Client) {
 		return
 	}
 
-	fmt.Printf("all keys: %s\n", strings.Join(allKeys, ", "))
+	fmt.Printf("all keys: %d\n", len(allKeys))
 }
 
 func printLength(raph raphanusclient.Client) {

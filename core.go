@@ -6,6 +6,7 @@ package raphanus
 import (
 	"log"
 	"regexp"
+	"runtime"
 	"sync"
 
 	"github.com/msoap/raphanus/common"
@@ -91,10 +92,19 @@ func (db *DB) Len() int {
 	return len(db.data)
 }
 
-// Stat - return some stat: version, memory, calls count, etc
+// Stat - return some stat: version, memory, GC, etc
 func (db *DB) Stat() raphanuscommon.Stat {
+	memStats := runtime.MemStats{}
+	runtime.ReadMemStats(&memStats)
+
 	return raphanuscommon.Stat{
-		Version: raphanuscommon.Version,
+		Version:        raphanuscommon.Version,
+		MemAlloc:       memStats.Alloc,
+		MemTotalAlloc:  memStats.TotalAlloc,
+		MemMallocs:     memStats.Mallocs,
+		MemFrees:       memStats.Frees,
+		MemHeapObjects: memStats.HeapObjects,
+		GCPauseTotalNs: memStats.GCSys,
 	}
 }
 
