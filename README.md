@@ -45,9 +45,13 @@ as Docker container:
  * get keys: `curl -s 'http://localhost:8771/v1/keys'`
  * get stat with authentication: `curl -s -u user:pass 'http://localhost:8771/v1/stat'`
  * set integer key `k1` with ttl (100 sec): `curl -s -X POST -d 123 'http://localhost:8771/v1/int/k1?ttl=100'`
+ * get integer key `k1`: `curl -s 'http://localhost:8771/v1/int/k1'`
  * set string key `k2` without ttl: `curl -s -X POST -d 'str value' 'http://localhost:8771/v1/str/k2'`
+ * get string key `k2`: `curl -s 'http://localhost:8771/v1/str/k2'`
  * set list value: `curl -s -X POST -H 'Content-Type: application/json' -d '["v1", "v2"]' http://localhost:8771/v1/list/k3`
+ * get list value: `curl -s 'http://localhost:8771/v1/list/k3'`
  * set dict value: `curl -s -X POST -H 'Content-Type: application/json' -d '{"dk1": "v1", "dk2": "v2"}' http://localhost:8771/v1/dict/k4`
+ * get dict value: `curl -s 'http://localhost:8771/v1/dict/k4'`
  * delete key `k1`: `curl -s -X DELETE http://localhost:8771/v1/remove/k1`
  * see other in [handlers.go](https://github.com/msoap/raphanus/blob/master/server/handlers.go)
 
@@ -109,7 +113,7 @@ func main() {
 
 	$ docker run --name raphanus --publish 8771:8771 --rm msoap/raphanus
 	$ docker run --name redis --publish --rm 6379:6379 redis
-    $ go test -bench Benchmark
+    $ make run-benchmark
     
     Benchmark_raphanusServer-4             	    2000       	    885763 ns/op
     Benchmark_raphanusEmbed-4              	 1000000       	      2265 ns/op
@@ -120,7 +124,7 @@ func main() {
 
 ### local raphanus and redis servers (on MacOS)
 
-    $ go test -bench Benchmark
+    $ make run-benchmark
     Benchmark_raphanusServer-4             	    5000       	    339360 ns/op
     Benchmark_raphanusEmbed-4              	 1000000       	      2164 ns/op
     Benchmark_redis-4                      	   10000       	    130194 ns/op
