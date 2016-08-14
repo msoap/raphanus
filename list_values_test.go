@@ -92,7 +92,12 @@ func Test_ListMethods02(t *testing.T) {
 	if valStr != "5" {
 		t.Errorf("GetListItem failed, got: %s, expected: %s", valStr, "5")
 	}
+}
 
+func Test_ListMethodsValidateKey(t *testing.T) {
+	raph := New("", 0)
+
+	_ = raph.SetInt("key_int", 7, 0)
 	if _, err := raph.GetListItem("key", -1); err == nil {
 		t.Errorf("GetListItem check index failed")
 	}
