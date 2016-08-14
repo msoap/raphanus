@@ -108,6 +108,8 @@ func main() {
 }
 ```
 
+An example of using the library: [simple.go](https://github.com/msoap/raphanus/blob/master/client/examples/simple.go)
+
 ## Bencmarks:
 ### with servers in Docker
 
