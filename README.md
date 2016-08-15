@@ -129,12 +129,16 @@ An example of using the library: [simple.go](https://github.com/msoap/raphanus/b
 
 ### local raphanus and redis servers (on MacOS)
 
+Redis 3.2.3
+
+memcached 1.4.24
+
     $ make run-benchmark
-    Benchmark_raphanusServer-4     	    5000       	    301054 ns/op
-    Benchmark_raphanusEmbed-4      	 1000000       	      2309 ns/op
-    Benchmark_redis-4              	   10000       	    127818 ns/op
-    Benchmark_memcache-4           	   10000       	    172703 ns/op
-    Benchmark_raphanusServerTTL-4  	    5000       	    380316 ns/op
-    Benchmark_raphanusEmbedTTL-4   	  200000       	      9202 ns/op
-    Benchmark_redisTTL-4           	   10000       	    149906 ns/op
-    Benchmark_memcacheTTL-4        	   10000       	    143990 ns/op
+    Benchmark_raphanusServer-4     	   20000       	    322539 ns/op
+    Benchmark_raphanusEmbed-4      	 3000000       	      2270 ns/op
+    Benchmark_redis-4              	   50000       	    124561 ns/op
+    Benchmark_memcache-4           	   50000       	    137918 ns/op
+    Benchmark_raphanusServerTTL-4  	   20000       	    369579 ns/op
+    Benchmark_raphanusEmbedTTL-4   	 1000000       	      8761 ns/op
+    Benchmark_redisTTL-4           	   50000       	    131287 ns/op
+    Benchmark_memcacheTTL-4        	   50000       	    149005 ns/op

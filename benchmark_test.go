@@ -1,8 +1,9 @@
 /*
 run:
-	docker run --name raphanus --publish 8771:8771 --rm msoap/raphanus
-	docker run --name redis --publish --rm 6379:6379 redis
-	go test -bench Benchmark
+	docker run --name raphanus --rm --publish 8771:8771 msoap/raphanus
+	docker run --name redis --rm --publish 6379:6379 redis
+	docker run --name memcache --rm --publish 11211:11211 memcached
+	make run-benchmark
 */
 package raphanus_test
 
@@ -112,7 +113,8 @@ func Benchmark_raphanusServerTTL(b *testing.B) {
 
 		newVal, err := raph.GetStr("key_" + strI)
 		if err != nil {
-			b.Fatal(err)
+			// skip deleted keys error
+			continue
 		}
 		if newVal != "bar_"+strI {
 			b.Fatal("Set/get not equal")

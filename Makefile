@@ -22,7 +22,7 @@ run-client-example:
 	go run client/examples/simple.go
 
 run-benchmark:
-	go test -short -bench .
+	go test -short -benchtime 5s -bench .
 
 watch-and-restart-server:
 	reflex -s make run-server
