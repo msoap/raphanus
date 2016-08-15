@@ -113,23 +113,28 @@ An example of using the library: [simple.go](https://github.com/msoap/raphanus/b
 ## Bencmarks:
 ### with servers in Docker
 
-	$ docker run --name raphanus --publish 8771:8771 --rm msoap/raphanus
-	$ docker run --name redis --publish --rm 6379:6379 redis
+    $ docker run --name raphanus --publish 8771:8771 --rm msoap/raphanus
+    $ docker run --name redis --rm --publish 6379:6379 redis
+    $ docker run --name memcache --rm --publish 11211:11211 memcached
     $ make run-benchmark
     
-    Benchmark_raphanusServer-4             	    2000       	    885763 ns/op
-    Benchmark_raphanusEmbed-4              	 1000000       	      2265 ns/op
-    Benchmark_redis-4                      	    3000       	    522932 ns/op
-    Benchmark_raphanusServerTTL-4          	    2000       	    984618 ns/op
-    Benchmark_raphanusEmbedTTL-4           	  300000       	      8023 ns/op
-    Benchmark_redisTTL-4                   	    2000       	    725928 ns/op
+    Benchmark_raphanusServer-4     	    2000       	    909746 ns/op
+    Benchmark_raphanusEmbed-4      	 1000000       	      2307 ns/op
+    Benchmark_redis-4              	    2000       	    592827 ns/op
+    Benchmark_memcache-4           	    2000       	    593110 ns/op
+    Benchmark_raphanusServerTTL-4  	    2000       	   1011409 ns/op
+    Benchmark_raphanusEmbedTTL-4   	  200000       	      8499 ns/op
+    Benchmark_redisTTL-4           	    2000       	    681730 ns/op
+    Benchmark_memcacheTTL-4        	    2000       	    534125 ns/op
 
 ### local raphanus and redis servers (on MacOS)
 
     $ make run-benchmark
-    Benchmark_raphanusServer-4             	    5000       	    339360 ns/op
-    Benchmark_raphanusEmbed-4              	 1000000       	      2164 ns/op
-    Benchmark_redis-4                      	   10000       	    130194 ns/op
-    Benchmark_raphanusServerTTL-4          	    5000       	    360447 ns/op
-    Benchmark_raphanusEmbedTTL-4           	  300000       	      8403 ns/op
-    Benchmark_redisTTL-4                   	   10000       	    152977 ns/op
+    Benchmark_raphanusServer-4     	    5000       	    301054 ns/op
+    Benchmark_raphanusEmbed-4      	 1000000       	      2309 ns/op
+    Benchmark_redis-4              	   10000       	    127818 ns/op
+    Benchmark_memcache-4           	   10000       	    172703 ns/op
+    Benchmark_raphanusServerTTL-4  	    5000       	    380316 ns/op
+    Benchmark_raphanusEmbedTTL-4   	  200000       	      9202 ns/op
+    Benchmark_redisTTL-4           	   10000       	    149906 ns/op
+    Benchmark_memcacheTTL-4        	   10000       	    143990 ns/op

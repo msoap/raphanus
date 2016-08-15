@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/msoap/raphanus"
 	"github.com/msoap/raphanus/client"
@@ -78,6 +79,27 @@ func Benchmark_redis(b *testing.B) {
 	}
 }
 
+func Benchmark_memcache(b *testing.B) {
+	mc := memcache.New("localhost:11211")
+
+	for i := 0; i < b.N; i++ {
+		strI := strconv.Itoa(i)
+		err := mc.Set(&memcache.Item{Key: "key_" + strI, Value: []byte("bar_" + strI)})
+		if err != nil {
+			b.Fatal(err)
+		}
+
+		item, err := mc.Get("key_" + strI)
+		if err != nil {
+			b.Fatal(err)
+		}
+		newVal := item.Value
+		if string(newVal) != "bar_"+strI {
+			b.Fatal("Set/get not equal")
+		}
+	}
+}
+
 func Benchmark_raphanusServerTTL(b *testing.B) {
 	raph := raphanusclient.New(raphanusclient.Cfg{Address: "http://localhost:8771"})
 
@@ -136,6 +158,27 @@ func Benchmark_redisTTL(b *testing.B) {
 			b.Fatal(err)
 		}
 		if newVal != "bar_"+strI {
+			b.Fatal("Set/get not equal")
+		}
+	}
+}
+
+func Benchmark_memcacheTTL(b *testing.B) {
+	mc := memcache.New("localhost:11211")
+
+	for i := 0; i < b.N; i++ {
+		strI := strconv.Itoa(i)
+		err := mc.Set(&memcache.Item{Key: "key_" + strI, Value: []byte("bar_" + strI), Expiration: 2})
+		if err != nil {
+			b.Fatal(err)
+		}
+
+		item, err := mc.Get("key_" + strI)
+		if err != nil {
+			b.Fatal(err)
+		}
+		newVal := item.Value
+		if string(newVal) != "bar_"+strI {
 			b.Fatal("Set/get not equal")
 		}
 	}
