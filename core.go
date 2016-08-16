@@ -47,7 +47,7 @@ func New(fsStorageName string, fsStorageSyncTime int) DB {
 	return db
 }
 
-// UnderLock - execute few RW-methods undef one Lock
+// UnderLock - execute few RW-methods under one Lock
 func (db *DB) UnderLock(fn func()) {
 	db.Lock()
 	db.withLock = false
