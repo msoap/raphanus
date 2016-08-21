@@ -1,11 +1,13 @@
 package raphanusclient
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
 	"strconv"
+	"sync"
 
 	"github.com/msoap/raphanus/common"
 )
@@ -19,9 +21,10 @@ const (
 
 // Client - client object
 type Client struct {
-	address  string
-	user     string
-	password string
+	address     string
+	user        string
+	password    string
+	reqBodyPool *sync.Pool
 }
 
 // Cfg - config for New()
@@ -33,7 +36,12 @@ type Cfg struct {
 
 // New - get new client
 func New(configs ...Cfg) Client {
-	cli := Client{address: defaultAddress}
+	cli := Client{
+		address: defaultAddress,
+		reqBodyPool: &sync.Pool{
+			New: func() interface{} { return new(bytes.Buffer) },
+		},
+	}
 
 	if len(configs) == 1 {
 		if len(configs[0].Address) > 0 {
@@ -46,6 +54,15 @@ func New(configs ...Cfg) Client {
 	}
 
 	return cli
+}
+
+func (cli *Client) getBuffer() *bytes.Buffer {
+	return cli.reqBodyPool.Get().(*bytes.Buffer)
+}
+
+func (cli *Client) backBuffer(data *bytes.Buffer) {
+	data.Reset()
+	cli.reqBodyPool.Put(data)
 }
 
 // checkCommonError - check and parse common error from server:
@@ -66,7 +83,7 @@ func checkCommonError(body io.Reader) error {
 }
 
 // Stat - get some stat from server: version, memory, GC, etc
-func (cli Client) Stat() (result raphanuscommon.Stat, err error) {
+func (cli *Client) Stat() (result raphanuscommon.Stat, err error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/stat")
 	if err != nil {
 		return result, err
@@ -91,7 +108,7 @@ func (cli Client) Stat() (result raphanuscommon.Stat, err error) {
 }
 
 // Keys - get all keys from cache (response may be too large)
-func (cli Client) Keys() (result []string, err error) {
+func (cli *Client) Keys() (result []string, err error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/keys")
 	if err != nil {
 		return result, err
@@ -116,7 +133,7 @@ func (cli Client) Keys() (result []string, err error) {
 }
 
 // Remove - remove key from cache
-func (cli Client) Remove(key string) (err error) {
+func (cli *Client) Remove(key string) (err error) {
 	body, err := cli.httpDelete(cli.address + APIVersion + "/remove/" + url.QueryEscape(key))
 	if err != nil {
 		return err
@@ -132,7 +149,7 @@ func (cli Client) Remove(key string) (err error) {
 }
 
 // Length - get count of keys
-func (cli Client) Length() (int, error) {
+func (cli *Client) Length() (int, error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/length")
 	if err != nil {
 		return 0, err
@@ -159,7 +176,7 @@ func (cli Client) Length() (int, error) {
 // Integer methods ------------------------------
 
 // GetInt - get int value by key
-func (cli Client) GetInt(key string) (int64, error) {
+func (cli *Client) GetInt(key string) (int64, error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/int/" + url.QueryEscape(key))
 	if err != nil {
 		return 0, err
@@ -184,13 +201,21 @@ func (cli Client) GetInt(key string) (int64, error) {
 }
 
 // SetInt - set int value by key
-func (cli Client) SetInt(key string, value int64, ttl int) (err error) {
+func (cli *Client) SetInt(key string, value int64, ttl int) (err error) {
 	ttlParam := ""
 	if ttl > 0 {
 		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
 	}
-	postData := []byte(strconv.FormatInt(value, 10))
-	body, err := cli.httpPost(cli.address+APIVersion+"/int/"+url.QueryEscape(key)+ttlParam, postData)
+
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	_, err = reqData.WriteString(strconv.FormatInt(value, 10))
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPost(cli.address+APIVersion+"/int/"+url.QueryEscape(key)+ttlParam, reqData)
 	if err != nil {
 		return err
 	}
@@ -205,9 +230,16 @@ func (cli Client) SetInt(key string, value int64, ttl int) (err error) {
 }
 
 // UpdateInt - update int value by key
-func (cli Client) UpdateInt(key string, value int64) (err error) {
-	postData := []byte(strconv.FormatInt(value, 10))
-	body, err := cli.httpPut(cli.address+APIVersion+"/int/"+url.QueryEscape(key), postData)
+func (cli *Client) UpdateInt(key string, value int64) (err error) {
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	_, err = reqData.WriteString(strconv.FormatInt(value, 10))
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPut(cli.address+APIVersion+"/int/"+url.QueryEscape(key), reqData)
 	if err != nil {
 		return err
 	}
@@ -222,7 +254,7 @@ func (cli Client) UpdateInt(key string, value int64) (err error) {
 }
 
 // IncrInt - increment int value by key
-func (cli Client) IncrInt(key string) (err error) {
+func (cli *Client) IncrInt(key string) (err error) {
 	body, err := cli.httpPost(cli.address+APIVersion+"/int/incr/"+url.QueryEscape(key), nil)
 	if err != nil {
 		return err
@@ -238,7 +270,7 @@ func (cli Client) IncrInt(key string) (err error) {
 }
 
 // DecrInt - decrement int value by key
-func (cli Client) DecrInt(key string) (err error) {
+func (cli *Client) DecrInt(key string) (err error) {
 	body, err := cli.httpPost(cli.address+APIVersion+"/int/decr/"+url.QueryEscape(key), nil)
 	if err != nil {
 		return err
@@ -256,7 +288,7 @@ func (cli Client) DecrInt(key string) (err error) {
 // String methods ------------------------------
 
 // GetStr - get string value by key
-func (cli Client) GetStr(key string) (string, error) {
+func (cli *Client) GetStr(key string) (string, error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/str/" + url.QueryEscape(key))
 	if err != nil {
 		return "", err
@@ -281,12 +313,21 @@ func (cli Client) GetStr(key string) (string, error) {
 }
 
 // SetStr - set string value by key
-func (cli Client) SetStr(key string, value string, ttl int) (err error) {
+func (cli *Client) SetStr(key string, value string, ttl int) (err error) {
 	ttlParam := ""
 	if ttl > 0 {
 		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
 	}
-	body, err := cli.httpPost(cli.address+APIVersion+"/str/"+url.QueryEscape(key)+ttlParam, []byte(value))
+
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	_, err = reqData.WriteString(value)
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPost(cli.address+APIVersion+"/str/"+url.QueryEscape(key)+ttlParam, reqData)
 	if err != nil {
 		return err
 	}
@@ -301,8 +342,16 @@ func (cli Client) SetStr(key string, value string, ttl int) (err error) {
 }
 
 // UpdateStr - update string value by key
-func (cli Client) UpdateStr(key string, value string) (err error) {
-	body, err := cli.httpPut(cli.address+APIVersion+"/str/"+url.QueryEscape(key), []byte(value))
+func (cli *Client) UpdateStr(key string, value string) (err error) {
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	_, err = reqData.WriteString(value)
+	if err != nil {
+		return err
+	}
+
+	body, err := cli.httpPut(cli.address+APIVersion+"/str/"+url.QueryEscape(key), reqData)
 	if err != nil {
 		return err
 	}
@@ -319,7 +368,7 @@ func (cli Client) UpdateStr(key string, value string) (err error) {
 // List methods ------------------------------
 
 // GetList - get list value by key
-func (cli Client) GetList(key string) (result raphanuscommon.ListValue, err error) {
+func (cli *Client) GetList(key string) (result raphanuscommon.ListValue, err error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/list/" + url.QueryEscape(key))
 	if err != nil {
 		return result, err
@@ -344,18 +393,21 @@ func (cli Client) GetList(key string) (result raphanuscommon.ListValue, err erro
 }
 
 // SetList - set list value by key
-func (cli Client) SetList(key string, value raphanuscommon.ListValue, ttl int) (err error) {
+func (cli *Client) SetList(key string, value raphanuscommon.ListValue, ttl int) (err error) {
 	ttlParam := ""
 	if ttl > 0 {
 		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
 	}
 
-	valueJSON, err := json.Marshal(value)
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	err = json.NewEncoder(reqData).Encode(value)
 	if err != nil {
 		return err
 	}
 
-	body, err := cli.httpPost(cli.address+APIVersion+"/list/"+url.QueryEscape(key)+ttlParam, valueJSON)
+	body, err := cli.httpPost(cli.address+APIVersion+"/list/"+url.QueryEscape(key)+ttlParam, reqData)
 	if err != nil {
 		return err
 	}
@@ -370,13 +422,16 @@ func (cli Client) SetList(key string, value raphanuscommon.ListValue, ttl int) (
 }
 
 // UpdateList - update list value by key
-func (cli Client) UpdateList(key string, value raphanuscommon.ListValue) (err error) {
-	valueJSON, err := json.Marshal(value)
+func (cli *Client) UpdateList(key string, value raphanuscommon.ListValue) (err error) {
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	err = json.NewEncoder(reqData).Encode(value)
 	if err != nil {
 		return err
 	}
 
-	body, err := cli.httpPut(cli.address+APIVersion+"/list/"+url.QueryEscape(key), valueJSON)
+	body, err := cli.httpPut(cli.address+APIVersion+"/list/"+url.QueryEscape(key), reqData)
 	if err != nil {
 		return err
 	}
@@ -391,7 +446,7 @@ func (cli Client) UpdateList(key string, value raphanuscommon.ListValue) (err er
 }
 
 // GetListItem - get item in list value by key and index
-func (cli Client) GetListItem(key string, idx int) (result string, err error) {
+func (cli *Client) GetListItem(key string, idx int) (result string, err error) {
 	idxParam := "?idx=" + url.QueryEscape(strconv.Itoa(idx))
 	body, err := cli.httpGet(cli.address + APIVersion + "/list/item/" + url.QueryEscape(key) + idxParam)
 	if err != nil {
@@ -417,9 +472,17 @@ func (cli Client) GetListItem(key string, idx int) (result string, err error) {
 }
 
 // SetListItem - set item in list value by key and index
-func (cli Client) SetListItem(key string, idx int, value string) (err error) {
+func (cli *Client) SetListItem(key string, idx int, value string) (err error) {
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	_, err = reqData.WriteString(value)
+	if err != nil {
+		return err
+	}
+
 	idxParam := "?idx=" + url.QueryEscape(strconv.Itoa(idx))
-	body, err := cli.httpPut(cli.address+APIVersion+"/list/item/"+url.QueryEscape(key)+idxParam, []byte(value))
+	body, err := cli.httpPut(cli.address+APIVersion+"/list/item/"+url.QueryEscape(key)+idxParam, reqData)
 	if err != nil {
 		return err
 	}
@@ -436,7 +499,7 @@ func (cli Client) SetListItem(key string, idx int, value string) (err error) {
 // Dict methods ------------------------------
 
 // GetDict - get dict value by key
-func (cli Client) GetDict(key string) (result raphanuscommon.DictValue, err error) {
+func (cli *Client) GetDict(key string) (result raphanuscommon.DictValue, err error) {
 	body, err := cli.httpGet(cli.address + APIVersion + "/dict/" + url.QueryEscape(key))
 	if err != nil {
 		return result, err
@@ -461,18 +524,21 @@ func (cli Client) GetDict(key string) (result raphanuscommon.DictValue, err erro
 }
 
 // SetDict - set dict value by key
-func (cli Client) SetDict(key string, value raphanuscommon.DictValue, ttl int) (err error) {
+func (cli *Client) SetDict(key string, value raphanuscommon.DictValue, ttl int) (err error) {
 	ttlParam := ""
 	if ttl > 0 {
 		ttlParam = "?ttl=" + url.QueryEscape(strconv.Itoa(ttl))
 	}
 
-	valueJSON, err := json.Marshal(value)
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	err = json.NewEncoder(reqData).Encode(value)
 	if err != nil {
 		return err
 	}
 
-	body, err := cli.httpPost(cli.address+APIVersion+"/dict/"+url.QueryEscape(key)+ttlParam, valueJSON)
+	body, err := cli.httpPost(cli.address+APIVersion+"/dict/"+url.QueryEscape(key)+ttlParam, reqData)
 	if err != nil {
 		return err
 	}
@@ -487,13 +553,16 @@ func (cli Client) SetDict(key string, value raphanuscommon.DictValue, ttl int) (
 }
 
 // UpdateDict - update dict value by key
-func (cli Client) UpdateDict(key string, value raphanuscommon.DictValue) (err error) {
-	valueJSON, err := json.Marshal(value)
+func (cli *Client) UpdateDict(key string, value raphanuscommon.DictValue) (err error) {
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	err = json.NewEncoder(reqData).Encode(value)
 	if err != nil {
 		return err
 	}
 
-	body, err := cli.httpPut(cli.address+APIVersion+"/dict/"+url.QueryEscape(key), valueJSON)
+	body, err := cli.httpPut(cli.address+APIVersion+"/dict/"+url.QueryEscape(key), reqData)
 	if err != nil {
 		return err
 	}
@@ -508,7 +577,7 @@ func (cli Client) UpdateDict(key string, value raphanuscommon.DictValue) (err er
 }
 
 // GetDictItem - get item form dict value by key and dict key
-func (cli Client) GetDictItem(key string, dkey string) (result string, err error) {
+func (cli *Client) GetDictItem(key string, dkey string) (result string, err error) {
 	dkeyParam := "?dkey=" + url.QueryEscape(dkey)
 	body, err := cli.httpGet(cli.address + APIVersion + "/dict/item/" + url.QueryEscape(key) + dkeyParam)
 	if err != nil {
@@ -534,9 +603,17 @@ func (cli Client) GetDictItem(key string, dkey string) (result string, err error
 }
 
 // SetDictItem - set item in dict value by key and dict key
-func (cli Client) SetDictItem(key string, dkey string, value string) (err error) {
+func (cli *Client) SetDictItem(key string, dkey string, value string) (err error) {
+	reqData := cli.getBuffer()
+	defer cli.backBuffer(reqData)
+
+	_, err = reqData.WriteString(value)
+	if err != nil {
+		return err
+	}
+
 	dkeyParam := "?dkey=" + url.QueryEscape(dkey)
-	body, err := cli.httpPut(cli.address+APIVersion+"/dict/item/"+url.QueryEscape(key)+dkeyParam, []byte(value))
+	body, err := cli.httpPut(cli.address+APIVersion+"/dict/item/"+url.QueryEscape(key)+dkeyParam, reqData)
 	if err != nil {
 		return err
 	}
@@ -551,7 +628,7 @@ func (cli Client) SetDictItem(key string, dkey string, value string) (err error)
 }
 
 // RemoveDictItem - remove one item from dict value by key and dict key
-func (cli Client) RemoveDictItem(key string, dkey string) (err error) {
+func (cli *Client) RemoveDictItem(key string, dkey string) (err error) {
 	dkeyParam := "?dkey=" + url.QueryEscape(dkey)
 	body, err := cli.httpDelete(cli.address + APIVersion + "/dict/item/" + url.QueryEscape(key) + dkeyParam)
 	if err != nil {

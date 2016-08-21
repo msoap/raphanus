@@ -1,7 +1,6 @@
 package raphanusclient
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,31 +9,31 @@ import (
 )
 
 // httpGet - call GET HTTP
-func (cli Client) httpGet(URL string) (body io.ReadCloser, err error) {
+func (cli *Client) httpGet(URL string) (body io.ReadCloser, err error) {
 	body, err = cli.httpClient("GET", URL, nil)
 	return body, err
 }
 
 // httpPost - HTTP POST call
-func (cli Client) httpPost(URL string, bodyRequest []byte) (body io.ReadCloser, err error) {
-	body, err = cli.httpClient("POST", URL, bytes.NewReader(bodyRequest))
+func (cli *Client) httpPost(URL string, bodyRequest io.Reader) (body io.ReadCloser, err error) {
+	body, err = cli.httpClient("POST", URL, bodyRequest)
 	return body, err
 }
 
 // httpPut - HTTP PUT call
-func (cli Client) httpPut(URL string, bodyRequest []byte) (body io.ReadCloser, err error) {
-	body, err = cli.httpClient("PUT", URL, bytes.NewReader(bodyRequest))
+func (cli *Client) httpPut(URL string, bodyRequest io.Reader) (body io.ReadCloser, err error) {
+	body, err = cli.httpClient("PUT", URL, bodyRequest)
 	return body, err
 }
 
 // httpDelete - HTTP DELETE call
-func (cli Client) httpDelete(URL string) (body io.ReadCloser, err error) {
+func (cli *Client) httpDelete(URL string) (body io.ReadCloser, err error) {
 	body, err = cli.httpClient("DELETE", URL, nil)
 	return body, err
 }
 
 // httpClient - call GET/POST/PUT/... by HTTP
-func (cli Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.ReadCloser, error) {
+func (cli *Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.ReadCloser, error) {
 	client := &http.Client{
 		Timeout: time.Duration(timeout) * time.Second,
 	}
