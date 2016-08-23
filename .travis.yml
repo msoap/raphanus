@@ -28,7 +28,9 @@ script:
   - errcheck ./...
   - diff <(gofmt -d . server) <(echo -n "")
   - go test -coverprofile=server.coverprofile ./server
-  - go test -coverprofile=main.coverprofile
+  - go test -coverprofile=common.coverprofile ./common
+  - go test -coverprofile=client.coverprofile ./client
+  - go test -coverprofile=main.coverprofile .
   - $HOME/gopath/bin/gover
   - if [ "$TRAVIS_GO_VERSION" = "$CURRENT_GO_VERSION" ]; then
       $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci || true;
