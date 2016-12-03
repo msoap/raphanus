@@ -235,7 +235,7 @@ func (app *server) decrInt(ctx echo.Context) error {
 // getBodyAsInt64 - get body of request as int64
 func getBodyAsInt64(ctx echo.Context) (int64, error) {
 	// read first 20 bytes
-	limitBody := io.LimitReader(ctx.Request().Body(), 20)
+	limitBody := io.LimitReader(ctx.Request().Body, 20)
 	bytes, err := ioutil.ReadAll(limitBody)
 	if err != nil {
 		return 0, err
@@ -318,7 +318,7 @@ func (app *server) updateStr(ctx echo.Context) error {
 
 // getBodyAsString - get body of request as string
 func getBodyAsString(ctx echo.Context) (string, error) {
-	limitBody := io.LimitReader(ctx.Request().Body(), raphanuscommon.MaxStringValueLength)
+	limitBody := io.LimitReader(ctx.Request().Body, raphanuscommon.MaxStringValueLength)
 	bytes, err := ioutil.ReadAll(limitBody)
 	if err != nil {
 		return "", err

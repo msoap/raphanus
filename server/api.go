@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine/standard"
 	"github.com/labstack/echo/middleware"
 	"github.com/msoap/raphanus"
 )
@@ -69,7 +68,5 @@ func (app *server) run() {
 	v1API.DELETE("/dict/item/:key", app.removeDictItem)
 
 	log.Printf("Server run on %s", app.cfg.address)
-	if err := echoServer.Run(standard.New(app.cfg.address)); err != nil {
-		log.Fatal(err)
-	}
+	echoServer.Logger.Fatal(echoServer.Start(app.cfg.address))
 }
