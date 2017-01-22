@@ -21,8 +21,7 @@ before_install:
 install: go get -t ./...
 
 script:
-  - go test -v ./...
-  - if [[ $TRAVIS_GO_VERSION =~ $CURRENT_GO_VERSION ]]; then go test -race -v ./...; fi
+  - go test -race -v ./...
   - go vet ./...
   - errcheck ./...
   - diff <(gofmt -d . server client common) <(echo -n "")
@@ -31,6 +30,6 @@ script:
     fi
 
 after_success:
-  - if [[ $TRAVIS_BRANCH == "master" ]] && [[ $TRAVIS_GO_VERSION =~ $CURRENT_GO_VERSION ]]; then
+  - if [[ $TRAVIS_BRANCH == "master" ]] && [[ $TRAVIS_GO_VERSION =~ $CURRENT_GO_VERSION ]] && [[ $TRAVIS_EVENT_TYPE != "cron" ]]; then
       rocker build --auth "$DOCKER_USERNAME:$(echo $DOCKER_PASSWORD | base64 -d)" --pull --meta --push;
     fi
