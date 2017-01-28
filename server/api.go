@@ -29,7 +29,7 @@ func (app *server) run() {
 	}
 
 	if len(app.cfg.user) > 0 {
-		echoServer.Use(middleware.BasicAuth(func(username, password string) bool {
+		echoServer.Use(middleware.BasicAuth(func(username, password string, _ echo.Context) bool {
 			if username == app.cfg.user && password == app.cfg.password {
 				return true
 			}
