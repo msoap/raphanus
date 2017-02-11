@@ -5,9 +5,9 @@ package raphanus
 
 import (
 	"log"
-	"regexp"
 	"runtime"
 	"sync"
+	"time"
 
 	"github.com/msoap/raphanus/common"
 )
@@ -15,8 +15,7 @@ import (
 // DB - in-memory cache object
 type DB struct {
 	data              map[string]interface{}
-	withLock          bool // execute get/set methods under lock
-	ttlQueue          ttlQueue
+	withLock          bool   // execute get/set methods under lock
 	fsStorageName     string // file name for save/load
 	fsStorageSyncTime int    // seconds between saves on disk
 	*sync.RWMutex
@@ -27,7 +26,6 @@ func New(fsStorageName string, fsStorageSyncTime int) DB {
 	db := DB{
 		data:              map[string]interface{}{},
 		withLock:          true,
-		ttlQueue:          newTTLQueue(),
 		fsStorageName:     fsStorageName,
 		fsStorageSyncTime: fsStorageSyncTime,
 		RWMutex:           new(sync.RWMutex),
@@ -111,28 +109,16 @@ func (db *DB) Stat() raphanuscommon.Stat {
 // setTTL - set TTL on one value in DB
 func (db *DB) setTTL(key string, ttl int) {
 	if ttl > 0 {
-		go func() {
-			db.ttlQueue.add(ttlQueueItem{key: &key, unixtime: ttl2unixtime(ttl)})
-			db.ttlQueue.handle(func(keys []string) {
-				db.Lock()
-				defer db.Unlock()
-
-				for _, key := range keys {
-					delete(db.data, key)
-				}
-			})
-		}()
+		time.AfterFunc(time.Duration(ttl)*time.Second, func() {
+			db.Lock()
+			delete(db.data, key)
+			db.Unlock()
+		})
 	}
 }
 
-var validKeyRe = regexp.MustCompile(`^[\w\-\.]+$`)
-
 func isValidKey(key string) bool {
 	if len(key) == 0 {
-		return false
-	}
-
-	if ok := validKeyRe.MatchString(key); !ok {
 		return false
 	}
 

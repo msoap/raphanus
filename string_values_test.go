@@ -14,7 +14,7 @@ func Test_StringMethods(t *testing.T) {
 		t.Errorf("SetStr got error: %v", err)
 	}
 
-	if err := raph.SetStr(" ", "str", 0); err == nil {
+	if err := raph.SetStr("", "str", 0); err == nil {
 		t.Errorf("SetStr validate key failed")
 	}
 

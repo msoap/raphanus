@@ -9,7 +9,7 @@ func Test_UpdateInt(t *testing.T) {
 		t.Errorf("SetInt got error: %v", err)
 	}
 
-	if err := raph.SetInt(" ", 7, 0); err == nil {
+	if err := raph.SetInt("", 7, 0); err == nil {
 		t.Errorf("SetInt validate key failed")
 	}
 

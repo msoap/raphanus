@@ -14,7 +14,7 @@ func Test_DictMethods01(t *testing.T) {
 		t.Errorf("SetDict failed: %v", err)
 	}
 
-	if err := raph.SetDict(" ", raphanuscommon.DictValue{"value": "v1"}, 0); err == nil {
+	if err := raph.SetDict("", raphanuscommon.DictValue{"value": "v1"}, 0); err == nil {
 		t.Errorf("SetDict validate key failed")
 	}
 
