@@ -22,10 +22,11 @@ run-client-example:
 	go run client/examples/simple.go
 
 run-benchmark:
-	go test -short -benchtime 5s -bench .
+	go test -short -benchtime 5s -benchmem -bench .
 
 watch-and-restart-server:
 	reflex -s make run-server
 
 docker-build-image:
-	rocker build
+	rocker build --no-cache
+	rm server/raphanus-server

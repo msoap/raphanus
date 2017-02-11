@@ -67,12 +67,12 @@ func Test_isValidKey(t *testing.T) {
 		ok  bool
 	}{
 		{"", false},
-		{" ", false},
-		{" key", false},
-		{"key ", false},
-		{" key ", false},
-		{" k ey ", false},
-		{"k ey", false},
+		{" ", true},
+		{" key", true},
+		{"key ", true},
+		{" key ", true},
+		{" k ey ", true},
+		{"k ey", true},
 		{"key", true},
 		{"key.p", true},
 		{"key-p", true},

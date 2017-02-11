@@ -13,7 +13,7 @@ func Test_ListMethods01(t *testing.T) {
 		t.Errorf("SetList failed: %v", err)
 	}
 
-	if err := raph.SetList(" ", []string{"value", "2"}, 0); err == nil {
+	if err := raph.SetList("", []string{"value", "2"}, 0); err == nil {
 		t.Errorf("SetList validate key failed")
 	}
 
