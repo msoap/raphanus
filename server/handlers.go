@@ -32,7 +32,7 @@ func getTTL(ctx echo.Context) (ttl int, err error) {
 }
 
 func getJSONError(ctx echo.Context, err error) error {
-	errorCode := 0
+	var errorCode int
 	switch err := err.(type) {
 	case raphanuscommon.RaphError:
 		errorCode = err.Code

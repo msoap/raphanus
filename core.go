@@ -118,9 +118,5 @@ func (db *DB) setTTL(key string, ttl int) {
 }
 
 func isValidKey(key string) bool {
-	if len(key) == 0 {
-		return false
-	}
-
-	return true
+	return len(key) > 0
 }
