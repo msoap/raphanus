@@ -135,11 +135,12 @@ Redis 3.2.7
 memcached 1.4.34
 
     $ make run-benchmark
-    Benchmark_raphanusServer-4      	   20000	    343534 ns/op	    9419 B/op	     128 allocs/op
-    Benchmark_raphanusEmbed-4       	 5000000	      1574 ns/op	     184 B/op	       4 allocs/op
-    Benchmark_redis-4               	   50000	    131214 ns/op	     350 B/op	      19 allocs/op
-    Benchmark_memcache-4            	   50000	    130763 ns/op	    2752 B/op	      63 allocs/op
-    Benchmark_raphanusServerTTL-4   	   20000	    355811 ns/op	    9449 B/op	     130 allocs/op
-    Benchmark_raphanusEmbedTTL-4    	 3000000	      2455 ns/op	     234 B/op	       6 allocs/op
-    Benchmark_redisTTL-4            	   50000	    134519 ns/op	     412 B/op	      21 allocs/op
-    Benchmark_memcacheTTL-4         	   50000	    131788 ns/op	    2753 B/op	      63 allocs/op
+    Benchmark_raphanusServer-4      	   20000	    349394 ns/op	    9465 B/op	     131 allocs/op
+    Benchmark_raphanusEmbed-4       	 3000000	      1919 ns/op	     213 B/op	       7 allocs/op
+    Benchmark_boltdb-4              	   30000	    258030 ns/op	   34320 B/op	      69 allocs/op
+    Benchmark_redis-4               	   50000	    128278 ns/op	     411 B/op	      23 allocs/op
+    Benchmark_memcache-4            	   50000	    135533 ns/op	    2752 B/op	      63 allocs/op
+    Benchmark_raphanusServerTTL-4   	   20000	    356989 ns/op	    9499 B/op	     133 allocs/op
+    Benchmark_raphanusEmbedTTL-4    	 2000000	      3347 ns/op	     244 B/op	       9 allocs/op
+    Benchmark_redisTTL-4            	   50000	    127851 ns/op	     473 B/op	      25 allocs/op
+    Benchmark_memcacheTTL-4         	   50000	    135326 ns/op	    2811 B/op	      67 allocs/op

@@ -8,13 +8,16 @@ run:
 package raphanus_test
 
 import (
+	"os"
 	"strconv"
 	"testing"
 
+	"github.com/boltdb/bolt"
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/msoap/raphanus"
 	"github.com/msoap/raphanus/client"
+	"github.com/stretchr/testify/require"
 )
 
 func Benchmark_raphanusServer(b *testing.B) {
@@ -23,17 +26,11 @@ func Benchmark_raphanusServer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err := raph.SetStr("key_"+strI, "bar_"+strI, 0)
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		newVal, err := raph.GetStr("key_" + strI)
-		if err != nil {
-			b.Fatal(err)
-		}
-		if newVal != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.NoError(b, err)
+		require.Equal(b, newVal, "bar_"+strI)
 	}
 }
 
@@ -43,17 +40,45 @@ func Benchmark_raphanusEmbed(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err := raph.SetStr("key_"+strI, "bar_"+strI, 0)
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		newVal, err := raph.GetStr("key_" + strI)
-		if err != nil {
-			b.Fatal(err)
+		require.NoError(b, err)
+		require.Equal(b, newVal, "bar_"+strI)
+	}
+}
+
+func Benchmark_boltdb(b *testing.B) {
+	db, err := bolt.Open("bolt_bench_tmp.db", 0600, nil)
+	require.NoError(b, err)
+	defer func() {
+		require.NoError(b, db.Close())
+		require.NoError(b, os.Remove("bolt_bench_tmp.db"))
+	}()
+
+	_ = db.Update(func(tx *bolt.Tx) error {
+		if _, err := tx.CreateBucket([]byte("bucket")); err != nil {
+			return err
 		}
-		if newVal != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		return nil
+	})
+
+	for i := 0; i < b.N; i++ {
+		strI := strconv.Itoa(i)
+
+		err := db.Update(func(tx *bolt.Tx) error {
+			return tx.Bucket([]byte("bucket")).Put([]byte("key_"+strI), []byte("bar_"+strI))
+		})
+		require.NoError(b, err)
+
+		err = db.View(func(tx *bolt.Tx) error {
+			newVal := tx.Bucket([]byte("bucket")).Get([]byte("key_" + strI))
+			if string(newVal) != "bar_"+strI {
+				b.Fatal("Set/get not equal")
+			}
+			return nil
+		})
+		require.NoError(b, err)
 	}
 }
 
@@ -66,17 +91,11 @@ func Benchmark_redis(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err = redisCli.Cmd("SET", "key_"+strI, "bar_"+strI).Err
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		newVal, err := redisCli.Cmd("GET", "key_"+strI).Str()
-		if err != nil {
-			b.Fatal(err)
-		}
-		if newVal != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.NoError(b, err)
+		require.Equal(b, newVal, "bar_"+strI)
 	}
 }
 
@@ -86,14 +105,10 @@ func Benchmark_memcache(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err := mc.Set(&memcache.Item{Key: "key_" + strI, Value: []byte("bar_" + strI)})
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		item, err := mc.Get("key_" + strI)
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 		newVal := item.Value
 		if string(newVal) != "bar_"+strI {
 			b.Fatal("Set/get not equal")
@@ -107,18 +122,14 @@ func Benchmark_raphanusServerTTL(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err := raph.SetStr("key_"+strI, "bar_"+strI, 2)
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		newVal, err := raph.GetStr("key_" + strI)
 		if err != nil {
 			// skip deleted keys error
 			continue
 		}
-		if newVal != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.Equal(b, newVal, "bar_"+strI)
 	}
 }
 
@@ -128,17 +139,11 @@ func Benchmark_raphanusEmbedTTL(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err := raph.SetStr("key_"+strI, "bar_"+strI, 2)
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		newVal, err := raph.GetStr("key_" + strI)
-		if err != nil {
-			b.Fatal(err)
-		}
-		if newVal != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.NoError(b, err)
+		require.Equal(b, newVal, "bar_"+strI)
 	}
 }
 
@@ -151,17 +156,11 @@ func Benchmark_redisTTL(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err = redisCli.Cmd("SET", "key_"+strI, "bar_"+strI, "EX", 2).Err
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		newVal, err := redisCli.Cmd("GET", "key_"+strI).Str()
-		if err != nil {
-			b.Fatal(err)
-		}
-		if newVal != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.NoError(b, err)
+		require.Equal(b, newVal, "bar_"+strI)
 	}
 }
 
@@ -171,17 +170,11 @@ func Benchmark_memcacheTTL(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
 		err := mc.Set(&memcache.Item{Key: "key_" + strI, Value: []byte("bar_" + strI), Expiration: 2})
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 
 		item, err := mc.Get("key_" + strI)
-		if err != nil {
-			b.Fatal(err)
-		}
+		require.NoError(b, err)
 		newVal := item.Value
-		if string(newVal) != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.Equal(b, string(newVal), "bar_"+strI)
 	}
 }
