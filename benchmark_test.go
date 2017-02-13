@@ -73,9 +73,7 @@ func Benchmark_boltdb(b *testing.B) {
 
 		err = db.View(func(tx *bolt.Tx) error {
 			newVal := tx.Bucket([]byte("bucket")).Get([]byte("key_" + strI))
-			if string(newVal) != "bar_"+strI {
-				b.Fatal("Set/get not equal")
-			}
+			require.Equal(b, string(newVal), "bar_"+strI)
 			return nil
 		})
 		require.NoError(b, err)
@@ -84,9 +82,7 @@ func Benchmark_boltdb(b *testing.B) {
 
 func Benchmark_redis(b *testing.B) {
 	redisCli, err := redis.Dial("tcp", "localhost:6379")
-	if err != nil {
-		b.Fatal(err)
-	}
+	require.NoError(b, err)
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
@@ -110,9 +106,7 @@ func Benchmark_memcache(b *testing.B) {
 		item, err := mc.Get("key_" + strI)
 		require.NoError(b, err)
 		newVal := item.Value
-		if string(newVal) != "bar_"+strI {
-			b.Fatal("Set/get not equal")
-		}
+		require.Equal(b, string(newVal), "bar_"+strI)
 	}
 }
 
@@ -149,9 +143,7 @@ func Benchmark_raphanusEmbedTTL(b *testing.B) {
 
 func Benchmark_redisTTL(b *testing.B) {
 	redisCli, err := redis.Dial("tcp", "localhost:6379")
-	if err != nil {
-		b.Fatal(err)
-	}
+	require.NoError(b, err)
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
