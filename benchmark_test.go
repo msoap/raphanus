@@ -57,10 +57,8 @@ func Benchmark_boltdb(b *testing.B) {
 	}()
 
 	err = db.Update(func(tx *bolt.Tx) error {
-		if _, err := tx.CreateBucketIfNotExists([]byte("bucket")); err != nil {
-			return err
-		}
-		return nil
+		_, err = tx.CreateBucketIfNotExists([]byte("bucket"))
+		return err
 	})
 	require.NoError(b, err)
 
