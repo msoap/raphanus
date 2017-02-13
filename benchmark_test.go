@@ -56,12 +56,13 @@ func Benchmark_boltdb(b *testing.B) {
 		require.NoError(b, os.Remove("bolt_bench_tmp.db"))
 	}()
 
-	_ = db.Update(func(tx *bolt.Tx) error {
-		if _, err := tx.CreateBucket([]byte("bucket")); err != nil {
+	err = db.Update(func(tx *bolt.Tx) error {
+		if _, err := tx.CreateBucketIfNotExists([]byte("bucket")); err != nil {
 			return err
 		}
 		return nil
 	})
+	require.NoError(b, err)
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
