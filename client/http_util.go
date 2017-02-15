@@ -5,7 +5,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 // httpGet - call GET HTTP
@@ -34,10 +33,6 @@ func (cli *Client) httpDelete(URL string) (body io.ReadCloser, err error) {
 
 // httpClient - call GET/POST/PUT/... by HTTP
 func (cli *Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.ReadCloser, error) {
-	client := &http.Client{
-		Timeout: time.Duration(timeout) * time.Second,
-	}
-
 	request, err := http.NewRequest(HTTPMethod, URL, bodyReq)
 	if err != nil {
 		return nil, err
@@ -51,7 +46,7 @@ func (cli *Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.Rea
 		request.SetBasicAuth(cli.user, cli.password)
 	}
 
-	response, err := client.Do(request)
+	response, err := cli.http.Do(request)
 	if err != nil {
 		return nil, err
 	}

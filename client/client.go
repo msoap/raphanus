@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/msoap/raphanus/common"
 )
@@ -24,6 +26,7 @@ type Client struct {
 	address     string
 	user        string
 	password    string
+	http        *http.Client
 	reqBodyPool *sync.Pool
 }
 
@@ -40,6 +43,10 @@ func New(configs ...Cfg) Client {
 		address: defaultAddress,
 		reqBodyPool: &sync.Pool{
 			New: func() interface{} { return new(bytes.Buffer) },
+		},
+		http: &http.Client{
+			Timeout:   time.Duration(timeout) * time.Second,
+			Transport: &http.Transport{DisableCompression: true}, // for small json no need compression
 		},
 	}
 
