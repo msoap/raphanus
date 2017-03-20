@@ -36,7 +36,7 @@ From Docker hub:
       -version
            	get version
 
-as Docker container:
+in Docker container:
 
     docker run --name raphanus --publish 8771:8771 --detach msoap/raphanus
 
