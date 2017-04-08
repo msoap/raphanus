@@ -40,6 +40,8 @@ in Docker container:
 
     docker run --name raphanus --publish 8771:8771 --detach msoap/raphanus
 
+Mirror docker [repository](https://quay.io/repository/msoap/raphanus): `quay.io/msoap/raphanus:latest`
+
 ## Examples: get calls to server by curl
 
  * get count of keys: `curl -s 'http://localhost:8771/v1/length'`
