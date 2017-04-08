@@ -1,5 +1,5 @@
 /*
-Package raphanus - simple implementation of Redis-like in-memory cache
+Package raphanus - simple implementation of in-memory cache
 */
 package raphanus
 
