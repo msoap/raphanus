@@ -1,3 +1,5 @@
+APP_NAME := raphanus
+
 test:
 	go test -short -cover -v ./...
 
@@ -27,6 +29,7 @@ run-benchmark:
 watch-and-restart-server:
 	reflex -s make run-server
 
-docker-build-image:
-	rocker build --no-cache
-	rm server/raphanus-server
+build-docker-image:
+	docker run --rm -v $$PWD:/go/src/$(APP_NAME) -w /go/src/$(APP_NAME) golang:alpine sh -c "apk add --no-cache git && go get ./... && go build -ldflags='-w -s' -o $(APP_NAME)-server ./server"
+	docker build -t msoap/$(APP_NAME):latest .
+	rm -f $(APP_NAME)-server
