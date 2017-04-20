@@ -31,7 +31,7 @@ script:
 
 after_success:
   - echo TRAVIS_BRANCH - $TRAVIS_BRANCH, TRAVIS_EVENT_TYPE - $TRAVIS_EVENT_TYPE, TRAVIS_TAG - $TRAVIS_TAG, TRAVIS_PULL_REQUEST - $TRAVIS_PULL_REQUEST
-  - if [[ $TRAVIS_BRANCH == "master" ]] && [[ $TRAVIS_GO_VERSION =~ $CURRENT_GO_VERSION ]] && [[ $TRAVIS_EVENT_TYPE == "push" || ! -z $TRAVIS_TAG ]]; then
+  - if [[ $TRAVIS_GO_VERSION =~ $CURRENT_GO_VERSION ]] && [[ $TRAVIS_BRANCH == "master" || ! -z $TRAVIS_TAG ]] && [[ $TRAVIS_EVENT_TYPE == "push" ]]; then
       docker login -u="$DOCKER_USERNAME" -p="$(echo $DOCKER_PASSWORD | base64 -d)" &&
       docker login -u="$QUAY_USERNAME" -p="$QUAY_PASSWORD" quay.io &&
       docker run --rm -v $PWD:/go/src/$APP_NAME -w /go/src/$APP_NAME golang:alpine sh -c "apk add --no-cache git && go get ./... && go build -ldflags='-w -s' -o ${APP_NAME}-server ./server" &&
