@@ -4,7 +4,7 @@ FROM golang:alpine as go_builder
 RUN apk add --no-cache git
 
 ENV CGO_ENABLED=0
-RUN go get -v github.com/msoap/raphanus
+RUN go get -v github.com/msoap/raphanus/...
 RUN cd /go/src/github.com/msoap/raphanus && go install -a -v -ldflags="-w -s" ./...
 
 # final image
