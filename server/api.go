@@ -14,10 +14,16 @@ type server struct {
 }
 
 func newAPI(cfg config) server {
-	return server{
+	instance := server{
 		cfg:      cfg,
-		raphanus: raphanus.New(cfg.filename, cfg.syncTime),
+		raphanus: raphanus.New(),
 	}
+
+	if cfg.filename != "" {
+		instance.raphanus.SetStorage(cfg.filename, cfg.syncTime)
+	}
+
+	return instance
 }
 
 func (app *server) run() {

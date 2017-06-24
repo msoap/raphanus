@@ -6,7 +6,7 @@ import (
 )
 
 func Test_ListMethods01(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	_ = raph.SetInt("key_int", 7, 0)
 	if err := raph.SetList("key", []string{"value", "2"}, 1); err != nil {
@@ -36,7 +36,7 @@ func Test_ListMethods01(t *testing.T) {
 }
 
 func Test_ListMethods02(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	_ = raph.SetInt("key_int", 7, 0)
 	if err := raph.SetList("key", []string{"value", "2"}, 0); err != nil {
@@ -95,7 +95,7 @@ func Test_ListMethods02(t *testing.T) {
 }
 
 func Test_ListMethodsValidateKey(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	_ = raph.SetInt("key_int", 7, 0)
 	if _, err := raph.GetListItem("key", -1); err == nil {

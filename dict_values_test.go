@@ -8,7 +8,7 @@ import (
 )
 
 func Test_DictMethods01(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	if err := raph.SetDict("key", raphanuscommon.DictValue{"value": "v1"}, 0); err != nil {
 		t.Errorf("SetDict failed: %v", err)
@@ -59,7 +59,7 @@ func Test_DictMethods01(t *testing.T) {
 }
 
 func Test_DictMethods02(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	if err := raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0); err != nil {
 		t.Errorf("SetDict failed: %v", err)
@@ -105,7 +105,7 @@ func Test_DictMethods02(t *testing.T) {
 }
 
 func Test_validateDictParams(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 	if err := raph.SetDict("key", raphanuscommon.DictValue{"k1": "v1", "k2": "v2"}, 0); err != nil {
 		t.Errorf("SetDict failed: %v", err)
 	}

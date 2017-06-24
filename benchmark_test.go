@@ -35,7 +35,7 @@ func Benchmark_raphanusServer(b *testing.B) {
 }
 
 func Benchmark_raphanusEmbed(b *testing.B) {
-	raph := raphanus.New("", 0)
+	raph := raphanus.New()
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
@@ -127,7 +127,7 @@ func Benchmark_raphanusServerTTL(b *testing.B) {
 }
 
 func Benchmark_raphanusEmbedTTL(b *testing.B) {
-	raph := raphanus.New("", 0)
+	raph := raphanus.New()
 
 	for i := 0; i < b.N; i++ {
 		strI := strconv.Itoa(i)
