@@ -12,7 +12,7 @@ func Test_TTL(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	raph := New("", 0)
+	raph := New()
 
 	_ = raph.SetInt("key01", 42, 5)
 	_ = raph.SetInt("key02", 43, 2)

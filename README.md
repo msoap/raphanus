@@ -68,9 +68,9 @@ import (
 )
 
 func main() {
-    raph := raphanus.New("", 0)
+    raph := raphanus.New()
     // or with storage, with sync every 300 seconds
-    // raph := raphanus.New("filename.db", 300)
+    // raph := raphanus.New().SetStorage("filename.db", 300)
     raph.SetStr("key", "value")
     v, err := raph.GetStr("key")
     if err == raphanuscommon.ErrKeyNotExists {

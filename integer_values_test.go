@@ -3,7 +3,7 @@ package raphanus
 import "testing"
 
 func Test_UpdateInt(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	if err := raph.SetInt("key", 7, 0); err != nil {
 		t.Errorf("SetInt got error: %v", err)
@@ -37,7 +37,7 @@ func Test_UpdateInt(t *testing.T) {
 }
 
 func Test_IncrInt(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	if err := raph.SetInt("key", 7, 0); err != nil {
 		t.Errorf("SetInt got error: %v", err)
@@ -65,7 +65,7 @@ func Test_IncrInt(t *testing.T) {
 }
 
 func Test_DecrInt(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	if err := raph.SetInt("key", 7, 0); err != nil {
 		t.Errorf("SetInt got error: %v", err)

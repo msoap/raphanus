@@ -9,7 +9,7 @@ import (
 )
 
 func Test_coreSimple01(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	if err := raph.SetStr("key", "value", 0); err != nil {
 		t.Errorf("SetStr got error: %v", err)

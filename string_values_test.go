@@ -7,7 +7,7 @@ import (
 )
 
 func Test_StringMethods(t *testing.T) {
-	raph := New("", 0)
+	raph := New()
 
 	_ = raph.SetInt("key_int", 10, 0)
 	if err := raph.SetStr("key", "value", 0); err != nil {

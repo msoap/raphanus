@@ -22,27 +22,32 @@ type DB struct {
 }
 
 // New - get new cache object
-func New(fsStorageName string, fsStorageSyncTime int) DB {
+func New() DB {
 	db := DB{
-		data:              map[string]interface{}{},
-		withLock:          true,
-		fsStorageName:     fsStorageName,
-		fsStorageSyncTime: fsStorageSyncTime,
-		RWMutex:           new(sync.RWMutex),
-	}
-
-	if len(fsStorageName) > 0 {
-		err := db.fsLoad()
-		if err != nil {
-			log.Printf("Load from file failed: %s", err)
-		}
-
-		if fsStorageSyncTime > 0 {
-			go db.fsHandle()
-		}
+		data:     map[string]interface{}{},
+		withLock: true,
+		RWMutex:  new(sync.RWMutex),
 	}
 
 	return db
+}
+
+// SetStorage - setup persistent storage
+func (db *DB) SetStorage(fsStorageName string, fsStorageSyncTime int) DB {
+	if fsStorageName == "" {
+		log.Fatal("storage file name cannot be empty")
+	}
+
+	err := db.fsLoad()
+	if err != nil {
+		log.Printf("Load from file failed: %s", err)
+	}
+
+	if fsStorageSyncTime > 0 {
+		go db.fsHandle()
+	}
+
+	return *db
 }
 
 // UnderLock - execute few RW-methods under one Lock
