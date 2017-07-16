@@ -114,6 +114,7 @@ func (db *DB) Stat() raphanuscommon.Stat {
 // setTTL - set TTL on one value in DB
 func (db *DB) setTTL(key string, ttl int) {
 	if ttl > 0 {
+		// race condition if key deleted and created again before fire the ttl event
 		time.AfterFunc(time.Duration(ttl)*time.Second, func() {
 			db.Lock()
 			delete(db.data, key)
