@@ -5,7 +5,6 @@ package raphanus
 
 import (
 	"log"
-	"runtime"
 	"sync"
 	"time"
 
@@ -93,22 +92,6 @@ func (db *DB) Keys() []string {
 // Len - return length of cache
 func (db *DB) Len() int {
 	return len(db.data)
-}
-
-// Stat - return some stat: version, memory, GC, etc
-func (db *DB) Stat() raphanuscommon.Stat {
-	memStats := runtime.MemStats{}
-	runtime.ReadMemStats(&memStats)
-
-	return raphanuscommon.Stat{
-		Version:        raphanuscommon.Version,
-		MemAlloc:       memStats.Alloc,
-		MemTotalAlloc:  memStats.TotalAlloc,
-		MemMallocs:     memStats.Mallocs,
-		MemFrees:       memStats.Frees,
-		MemHeapObjects: memStats.HeapObjects,
-		GCPauseTotalNs: memStats.GCSys,
-	}
 }
 
 // setTTL - set TTL on one value in DB

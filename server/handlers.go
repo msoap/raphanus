@@ -4,6 +4,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"runtime"
 	"strconv"
 
 	"github.com/labstack/echo"
@@ -53,7 +54,19 @@ result:
 	{"error_code":0,"version":"0.1"}
 */
 func (app *server) handlerStat(ctx echo.Context) error {
-	stat := app.raphanus.Stat()
+	memStats := runtime.MemStats{}
+	runtime.ReadMemStats(&memStats)
+
+	stat := raphanuscommon.Stat{
+		Version:        raphanuscommon.Version,
+		MemAlloc:       memStats.Alloc,
+		MemTotalAlloc:  memStats.TotalAlloc,
+		MemMallocs:     memStats.Mallocs,
+		MemFrees:       memStats.Frees,
+		MemHeapObjects: memStats.HeapObjects,
+		GCPauseTotalNs: memStats.GCSys,
+	}
+
 	return ctx.JSON(http.StatusOK, raphanuscommon.OutputStat{Stat: stat})
 }
 
