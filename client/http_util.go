@@ -52,7 +52,7 @@ func (cli *Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.Rea
 	}
 
 	if response.StatusCode == http.StatusUnauthorized {
-		return nil, fmt.Errorf("Unauthorized")
+		return nil, fmt.Errorf("unauthorized")
 	}
 
 	return response.Body, nil
@@ -63,9 +63,5 @@ func httpFinalize(body io.ReadCloser) error {
 		return err
 	}
 
-	if err := body.Close(); err != nil {
-		return err
-	}
-
-	return nil
+	return body.Close()
 }

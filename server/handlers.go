@@ -107,8 +107,8 @@ result:
 	{"error_code":0, "length": 3}
 */
 func (app *server) handlerLength(ctx echo.Context) error {
-	len := app.raphanus.Len()
-	return ctx.JSON(http.StatusOK, raphanuscommon.OutputLength{Length: len})
+	length := app.raphanus.Len()
+	return ctx.JSON(http.StatusOK, raphanuscommon.OutputLength{Length: length})
 }
 
 // Integer methods ------------------------------

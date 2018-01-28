@@ -37,8 +37,8 @@ func Test_coreSimple01(t *testing.T) {
 		t.Errorf("GetStr:\ngot:      %d\nexpected: %d", vInt, 7)
 	}
 
-	if len := raph.Len(); len != 2 {
-		t.Errorf("Len() failed:\ngot:      %d\nexpected: %d", len, 2)
+	if length := raph.Len(); length != 2 {
+		t.Errorf("Len() failed:\ngot:      %d\nexpected: %d", length, 2)
 	}
 
 	allKeys := raph.Keys()
@@ -56,8 +56,8 @@ func Test_coreSimple01(t *testing.T) {
 	if err != nil {
 		t.Error("Remove() failed")
 	}
-	if len := raph.Len(); len != 1 {
-		t.Errorf("Len() after remove failed:\ngot:      %d\nexpected: %d", len, 1)
+	if length := raph.Len(); length != 1 {
+		t.Errorf("Len() after remove failed:\ngot:      %d\nexpected: %d", length, 1)
 	}
 }
 

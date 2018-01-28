@@ -48,59 +48,59 @@ func (db *DB) fsLoad() (err error) {
 		line := scanner.Text()
 		parts := strings.SplitN(line, "\t", 3)
 		if len(parts) != 3 {
-			return fmt.Errorf("Load from file, file is damaged")
+			return fmt.Errorf("load from file, file is damaged")
 		}
 		switch parts[1] {
 		case "int":
 			var intVal int64
 			intVal, err = strconv.ParseInt(parts[2], 10, 64)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse int: %s", parts[0], err)
+				return fmt.Errorf("load from file, file is damaged, key: '%s', parse int: %s", parts[0], err)
 			}
 
 			err = db.SetInt(parts[0], intVal, 0)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+				return fmt.Errorf("load from file, file is damaged, key: '%s'", parts[0])
 			}
 		case "str":
 			listVal := make(raphanuscommon.ListValue, 0)
 			err = json.Unmarshal([]byte(parts[2]), &listVal)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse string: %s", parts[0], err)
+				return fmt.Errorf("load from file, file is damaged, key: '%s', parse string: %s", parts[0], err)
 			}
 			if len(listVal) != 1 {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse string", parts[0])
+				return fmt.Errorf("load from file, file is damaged, key: '%s', parse string", parts[0])
 			}
 
 			strVal := listVal[0]
 			err = db.SetStr(parts[0], strVal, 0)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+				return fmt.Errorf("load from file, file is damaged, key: '%s'", parts[0])
 			}
 		case "list":
 			listVal := make(raphanuscommon.ListValue, 0)
 			err = json.Unmarshal([]byte(parts[2]), &listVal)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse list: %s", parts[0], err)
+				return fmt.Errorf("load from file, file is damaged, key: '%s', parse list: %s", parts[0], err)
 			}
 
 			err = db.SetList(parts[0], listVal, 0)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+				return fmt.Errorf("load from file, file is damaged, key: '%s'", parts[0])
 			}
 		case "dict":
 			dictVal := make(raphanuscommon.DictValue)
 			err = json.Unmarshal([]byte(parts[2]), &dictVal)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s', parse dict: %s", parts[0], err)
+				return fmt.Errorf("load from file, file is damaged, key: '%s', parse dict: %s", parts[0], err)
 			}
 
 			err = db.SetDict(parts[0], dictVal, 0)
 			if err != nil {
-				return fmt.Errorf("Load from file, file is damaged, key: '%s'", parts[0])
+				return fmt.Errorf("load from file, file is damaged, key: '%s'", parts[0])
 			}
 		default:
-			return fmt.Errorf("Load from file, file is damaged, key: '%s', unknown type: %s", parts[0], parts[1])
+			return fmt.Errorf("load from file, file is damaged, key: '%s', unknown type: %s", parts[0], parts[1])
 		}
 	}
 
@@ -150,13 +150,13 @@ func (db *DB) fsSave() (err error) {
 			}
 			row[2] = string(byteVal)
 		default:
-			return fmt.Errorf("Save from file, unknown type for key: '%s'", key)
+			return fmt.Errorf("save from file, unknown type for key: '%s'", key)
 		}
 
 		line := strings.Join(row, "\t") + "\n"
 		_, err := file.WriteString(line)
 		if err != nil {
-			return fmt.Errorf("Save from file, save row for key: '%s': %s", key, err)
+			return fmt.Errorf("save from file, save row for key: '%s': %s", key, err)
 		}
 	}
 
