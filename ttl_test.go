@@ -21,34 +21,34 @@ func Test_TTL(t *testing.T) {
 	time.Sleep(time.Second + 100*time.Millisecond)
 
 	if _, err := raph.GetInt("key01"); err != nil {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 	if _, err := raph.GetInt("key02"); err != nil {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 	if _, err := raph.GetInt("key03"); err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 
 	time.Sleep(time.Second + 100*time.Millisecond)
 	if _, err := raph.GetInt("key01"); err != nil {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 	if _, err := raph.GetInt("key02"); err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 	if _, err := raph.GetInt("key03"); err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 
 	time.Sleep(3*time.Second + 100*time.Millisecond)
 	if _, err := raph.GetInt("key01"); err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 	if _, err := raph.GetInt("key02"); err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 	if _, err := raph.GetInt("key03"); err != raphanuscommon.ErrKeyNotExists {
-		t.Error("TTL dont work")
+		t.Error("TTL don't work")
 	}
 }
