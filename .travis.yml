@@ -6,13 +6,13 @@ services:
 env:
   global:
     - APP_NAME=raphanus
-    - CURRENT_GO_VERSION="1.9"
+    - CURRENT_GO_VERSION="1.10"
     - DOCKER_USERNAME=msoap
     - secure: OPW0SK3Lp31fquyuMWc1tfpE6db015cFhSkPCeIjdsuS/tu9XYghkO7jUjGkTlnFuggW9clad4fVxgZb1nrZIEOGoAPJ8aHDf7B09Teg1hEhfiXOC4daL07Jg6coF2wvmTt+52ZJAgYYeedLNgkN7+Ie+1X7YjhXnf2SnidgxeKLbUVAkzwrtUSSdos+epxq3Cn6czGLRuErfqK63fl8lf/akCh0S9iQ4RKW6AWmtiAbnbqRNkArCV5tbUZ1KFE+yhNPf7kPsa7ax40s5Y24ckn8iXpX48od8y3R+xmFJfFOFWppw8qKiKX2rEjlPmrjqrniH+qvULPzAhg1WYykJsaAtQmdNVTHONV/XLNSb9dDSj4RN/IrxYgYqDcuE8thxFagYbwh0n7nLj1bzPT9AaI31vpWN5Il/wWvIZ1QLRhVDDzqI7j+VuNPvyGa2ouf23ieuSUFigpPfpIB2af23OMki3HHjjJtiYbIJmBxigFVRP9/BETVYmO+vLKKno8U4el3L6+92WfdFzz+LLyAkUoM7ByIP5kW1yX0SCjW1bq5hGFhFRzEKNkp0Ib/bqRSlmHOTt+JaGWVSB+7QqWpH5TjwRhvg+qyxfJWjmb5zzhd2jUQzwI07IkMlxzTBTObwnNyFWgcIqubzx6d+7IJ19eEQ36uluRluEz3PkIejGw=
 
 go:
-  - 1.8.x
   - 1.9.x
+  - 1.10.x
   - master
 
 matrix:
@@ -22,7 +22,6 @@ matrix:
 
 before_install:
   - go get github.com/mattn/goveralls
-  - go get github.com/philwinder/gocoverage
   - go get github.com/kisielk/errcheck
 
 install: go get -t ./...
@@ -33,7 +32,7 @@ script:
   - errcheck ./...
   - diff <(gofmt -d . server client common) <(echo -n "")
   - if [[ $TRAVIS_GO_VERSION =~ $CURRENT_GO_VERSION ]]; then
-      gocoverage && goveralls -coverprofile=profile.cov -service=travis-ci || true;
+      go test -covermode=count -coverprofile=profile.cov ./... && goveralls -coverprofile=profile.cov -service=travis-ci || true;
     fi
 
 after_success:
