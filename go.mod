@@ -5,7 +5,7 @@ require (
 	github.com/bradfitz/gomemcache v0.0.0-20180710155616-bc664df96737
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/labstack/echo v3.3.5+incompatible
+	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.2.7 // indirect
 	github.com/mattn/go-colorable v0.0.9 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
