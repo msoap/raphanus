@@ -1,8 +1,8 @@
 Raphanus - simple in-memory cache
 ---------------------------------
 
-[![GoDoc](https://godoc.org/github.com/msoap/raphanus?status.svg)](https://godoc.org/github.com/msoap/raphanus)
-[![Build Status](https://travis-ci.org/msoap/raphanus.svg?branch=master)](https://travis-ci.org/msoap/raphanus)
+[![Go Reference](https://pkg.go.dev/badge/github.com/msoap/raphanus/.svg)](https://pkg.go.dev/github.com/msoap/raphanus/)
+[![Go](https://github.com/msoap/raphanus/actions/workflows/go.yml/badge.svg)](https://github.com/msoap/raphanus/actions/workflows/go.yml)
 [![Coverage Status](https://coveralls.io/repos/github/msoap/raphanus/badge.svg?branch=master)](https://coveralls.io/github/msoap/raphanus?branch=master)
 [![Docker Pulls](https://img.shields.io/docker/pulls/msoap/raphanus.svg?maxAge=3600)](https://hub.docker.com/r/msoap/raphanus/)
 [![Sourcegraph](https://sourcegraph.com/github.com/msoap/raphanus/-/badge.svg)](https://sourcegraph.com/github.com/msoap/raphanus?badge)
