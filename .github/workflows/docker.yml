@@ -2,9 +2,6 @@ name: Publish Docker image
 
 on:
   push:
-    tags:
-      - 'v*'
-  push:
     branches: [ master ]
 
 jobs:
