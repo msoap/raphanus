@@ -6,7 +6,7 @@ RUN apk add --no-cache git
 ENV CGO_ENABLED=0
 COPY . /src
 WORKDIR /src
-RUN go build -v -ldflags="-w -s" -o /go/bin/raphanus-server ./server/
+RUN go build -v -trimpath -ldflags="-w -s" -o /go/bin/raphanus-server ./server/
 
 # final image
 FROM alpine
