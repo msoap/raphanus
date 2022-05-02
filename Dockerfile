@@ -1,9 +1,10 @@
 # build image
-FROM golang:alpine as go_builder
+FROM --platform=$BUILDPLATFORM golang:alpine as go_builder
 
 RUN apk add --no-cache git
 
 ENV CGO_ENABLED=0
+ENV GOARCH=$TARGETARCH
 COPY . /src
 WORKDIR /src
 RUN go build -v -trimpath -ldflags="-w -s" -o /go/bin/raphanus-server ./server/
