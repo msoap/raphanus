@@ -4,7 +4,11 @@ FROM --platform=$BUILDPLATFORM golang:alpine as go_builder
 RUN apk add --no-cache git
 
 ENV CGO_ENABLED=0
+# GOARM=6 affects only "arm" builds
+ENV GOARM=6
+# "amd64", "arm64" or "arm" (--platform=linux/amd64,linux/arm64,linux/arm/v6)
 ENV GOARCH=$TARGETARCH
+ENV GOOS=linux
 COPY . /src
 WORKDIR /src
 RUN go build -v -trimpath -ldflags="-w -s" -o /go/bin/raphanus-server ./server/
