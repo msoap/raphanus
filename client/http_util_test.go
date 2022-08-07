@@ -74,7 +74,7 @@ func getTestServer(pathMapping map[string]string) *httptest.Server {
 	mux := http.NewServeMux()
 	for path, result := range pathMapping {
 		result := result
-		mux.HandleFunc(path, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mux.HandleFunc(path, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 			_, _ = io.WriteString(w, result)
 		}))
 	}
