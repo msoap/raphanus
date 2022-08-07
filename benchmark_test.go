@@ -1,5 +1,6 @@
 /*
 run:
+
 	docker run --name raphanus --rm --publish 8771:8771 msoap/raphanus
 	docker run --name redis --rm --publish 6379:6379 redis
 	docker run --name memcache --rm --publish 11211:11211 memcached
@@ -16,7 +17,7 @@ import (
 	"github.com/bradfitz/gomemcache/memcache"
 	"github.com/mediocregopher/radix.v2/redis"
 	"github.com/msoap/raphanus"
-	"github.com/msoap/raphanus/client"
+	raphanusclient "github.com/msoap/raphanus/client"
 	"github.com/stretchr/testify/require"
 )
 
