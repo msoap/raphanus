@@ -2,7 +2,6 @@ package raphanusclient
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,7 +20,7 @@ func Test_HTTP(t *testing.T) {
 	if err != nil {
 		t.Errorf("1. httpGet() failed, error: %s", err)
 	}
-	body, err := ioutil.ReadAll(reader)
+	body, err := io.ReadAll(reader)
 	if err != nil {
 		t.Errorf("2. httpGet() failed, error: %s", err)
 	}
@@ -33,7 +32,7 @@ func Test_HTTP(t *testing.T) {
 	if err != nil {
 		t.Errorf("1. httpPost() failed, error: %s", err)
 	}
-	body, err = ioutil.ReadAll(reader)
+	body, err = io.ReadAll(reader)
 	if err != nil {
 		t.Errorf("2. httpPost() failed, error: %s", err)
 	}
@@ -45,7 +44,7 @@ func Test_HTTP(t *testing.T) {
 	if err != nil {
 		t.Errorf("1. httpPut() failed, error: %s", err)
 	}
-	body, err = ioutil.ReadAll(reader)
+	body, err = io.ReadAll(reader)
 	if err != nil {
 		t.Errorf("2. httpPut() failed, error: %s", err)
 	}
@@ -57,7 +56,7 @@ func Test_HTTP(t *testing.T) {
 	if err != nil {
 		t.Errorf("1. httpDelete() failed, error: %s", err)
 	}
-	body, err = ioutil.ReadAll(reader)
+	body, err = io.ReadAll(reader)
 	if err != nil {
 		t.Errorf("2. httpDelete() failed, error: %s", err)
 	}

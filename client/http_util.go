@@ -3,7 +3,6 @@ package raphanusclient
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -59,7 +58,7 @@ func (cli *Client) httpClient(HTTPMethod, URL string, bodyReq io.Reader) (io.Rea
 }
 
 func httpFinalize(body io.ReadCloser) error {
-	if _, err := io.Copy(ioutil.Discard, body); err != nil {
+	if _, err := io.Copy(io.Discard, body); err != nil {
 		return err
 	}
 

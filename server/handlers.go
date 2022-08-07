@@ -2,13 +2,12 @@ package main
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"runtime"
 	"strconv"
 
 	"github.com/labstack/echo"
-	"github.com/msoap/raphanus/common"
+	raphanuscommon "github.com/msoap/raphanus/common"
 )
 
 // allocate result for success calls
@@ -51,6 +50,7 @@ handlerStat - get some stat: version, memory...
 
 curl http://localhost:8771/v1/stat
 result:
+
 	{"error_code":0,"version":"0.1"}
 */
 func (app *server) handlerStat(ctx echo.Context) error {
@@ -75,6 +75,7 @@ handlerKeys - get all keys
 
 curl http://localhost:8771/v1/keys
 result:
+
 	{"error_code":0,"keys":["k1", "k2"]}
 */
 func (app *server) handlerKeys(ctx echo.Context) error {
@@ -87,6 +88,7 @@ handlerRemoveKey - remove key
 
 curl -s -X DELETE http://localhost:8771/v1/remove/k1
 result:
+
 	{"error_code":0}
 */
 func (app *server) handlerRemoveKey(ctx echo.Context) error {
@@ -104,6 +106,7 @@ handlerLength - get count of keys
 
 curl -s http://localhost:8771/v1/length
 result:
+
 	{"error_code":0, "length": 3}
 */
 func (app *server) handlerLength(ctx echo.Context) error {
@@ -118,6 +121,7 @@ getInt - get one integer value by key
 
 curl -s http://localhost:8771/v1/int/k1
 result:
+
 	{"error_code":0,"value_int":737}
 */
 func (app *server) getInt(ctx echo.Context) error {
@@ -136,6 +140,7 @@ setInt - set one integer value by key
 
 curl -s -X POST -d 123 'http://localhost:8771/v1/int/k1?ttl=60'
 result:
+
 	{"error_code":0}
 */
 func (app *server) setInt(ctx echo.Context) error {
@@ -163,6 +168,7 @@ updateInt - set one integer value by key
 
 curl -s -X PUT -d 127 http://localhost:8771/v1/int/k1
 result:
+
 	{"error_code":0}
 */
 func (app *server) updateInt(ctx echo.Context) error {
@@ -184,6 +190,7 @@ incrInt - increment one value
 
 curl -s -X POST http://localhost:8771/v1/int/incr/k1
 result:
+
 	{"error_code":0,"value_int":738}
 */
 func (app *server) incrInt(ctx echo.Context) error {
@@ -217,6 +224,7 @@ decrInt - decrement one value
 
 curl -s -X POST http://localhost:8771/v1/int/decr/k1
 result:
+
 	{"error_code":0,"value_int":736}
 */
 func (app *server) decrInt(ctx echo.Context) error {
@@ -249,7 +257,7 @@ func (app *server) decrInt(ctx echo.Context) error {
 func getBodyAsInt64(ctx echo.Context) (int64, error) {
 	// read first 20 bytes
 	limitBody := io.LimitReader(ctx.Request().Body, 20)
-	bytes, err := ioutil.ReadAll(limitBody)
+	bytes, err := io.ReadAll(limitBody)
 	if err != nil {
 		return 0, err
 	}
@@ -268,6 +276,7 @@ getStr - get one string value by key
 
 curl -s http://localhost:8771/v1/str/k1
 result:
+
 	{"error_code":0,"value_str":"string value"}
 */
 func (app *server) getStr(ctx echo.Context) error {
@@ -286,6 +295,7 @@ setStr - set one string value by key
 
 curl -s -X POST -d "string value" 'http://localhost:8771/v1/str/k1?ttl=60'
 result:
+
 	{"error_code":0}
 */
 func (app *server) setStr(ctx echo.Context) error {
@@ -313,6 +323,7 @@ updateStr - set one string value by key
 
 curl -s -X PUT -d "new value" http://localhost:8771/v1/str/k1
 result:
+
 	{"error_code":0}
 */
 func (app *server) updateStr(ctx echo.Context) error {
@@ -332,7 +343,7 @@ func (app *server) updateStr(ctx echo.Context) error {
 // getBodyAsString - get body of request as string
 func getBodyAsString(ctx echo.Context) (string, error) {
 	limitBody := io.LimitReader(ctx.Request().Body, raphanuscommon.MaxStringValueLength)
-	bytes, err := ioutil.ReadAll(limitBody)
+	bytes, err := io.ReadAll(limitBody)
 	if err != nil {
 		return "", err
 	}
@@ -347,6 +358,7 @@ getList - get one list value by key
 
 curl -s http://localhost:8771/v1/list/k1
 result:
+
 	{"error_code":0,"value_list":["l1", "l2", "l3"]}
 */
 func (app *server) getList(ctx echo.Context) error {
@@ -365,6 +377,7 @@ setList - set one list value by key
 
 curl -s -X POST -H 'Content-Type: application/json' -d '["l1", "l2", "l3"]' 'http://localhost:8771/v1/list/k1?ttl=60'
 result:
+
 	{"error_code":0}
 */
 func (app *server) setList(ctx echo.Context) error {
@@ -392,6 +405,7 @@ updateList - update one list value by exists key
 
 curl -s -X PUT -H 'Content-Type: application/json' -d '["l1", "l2"]' http://localhost:8771/v1/list/k1
 result:
+
 	{"error_code":0}
 */
 func (app *server) updateList(ctx echo.Context) error {
@@ -413,6 +427,7 @@ getListItem - get one item from list value by key and index in list
 
 curl -s 'http://localhost:8771/v1/list/item/k1?idx=1'
 result:
+
 	{"result": "ok", "value_str": "l2"}
 */
 func (app *server) getListItem(ctx echo.Context) error {
@@ -435,6 +450,7 @@ setListItem - set one item on list value by key and index in list
 
 curl -s -X PUT -d "l3" 'http://localhost:8771/v1/list/item/k1?idx=1'
 result:
+
 	{"error_code":0}
 */
 func (app *server) setListItem(ctx echo.Context) error {
@@ -463,6 +479,7 @@ getDict - get one dict value by key
 
 curl -s http://localhost:8771/v1/dict/k1
 result:
+
 	{"error_code":0, "value_list": {"dk1": "v1", "dk2": "v2"}}
 */
 func (app *server) getDict(ctx echo.Context) error {
@@ -481,6 +498,7 @@ setDict - set one dict value by key
 
 curl -s -X POST -H 'Content-Type: application/json' -d '{"dk1": "v1", "dk2": "v2"}' 'http://localhost:8771/v1/dict/k1?ttl=60'
 result:
+
 	{"error_code":0}
 */
 func (app *server) setDict(ctx echo.Context) error {
@@ -508,6 +526,7 @@ updateDict - update one dict value by exists key
 
 curl -s -X PUT -H 'Content-Type: application/json' -d '{"dk1": "v33"}' http://localhost:8771/v1/dict/k1
 result:
+
 	{"error_code":0}
 */
 func (app *server) updateDict(ctx echo.Context) error {
@@ -529,6 +548,7 @@ getDictItem - get one item from dict value by key and dict key
 
 curl -s 'http://localhost:8771/v1/dict/item/k1?dkey=dk1'
 result:
+
 	{"result": "ok", "value_str": "l2"}
 */
 func (app *server) getDictItem(ctx echo.Context) error {
@@ -547,6 +567,7 @@ setDictItem - set one item in dict value by key and dict key
 
 curl -s -X PUT -d "v30" 'http://localhost:8771/v1/dict/item/k1?dkey=dk1'
 result:
+
 	{"result": "ok"}
 */
 func (app *server) setDictItem(ctx echo.Context) error {
@@ -569,6 +590,7 @@ removeDictItem - remove one item from dict value by key and dict key
 
 curl -s -X DELETE 'http://localhost:8771/v1/dict/item/k1?dkey=dk1'
 result:
+
 	{"result": "ok"}
 */
 func (app *server) removeDictItem(ctx echo.Context) error {
