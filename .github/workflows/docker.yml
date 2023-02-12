@@ -16,10 +16,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get the version
-        id: get_git_tag
-        run: echo name=GIT_TAG::${GITHUB_REF/refs\/tags\/v/} >> $GITHUB_OUTPUT
-        shell: bash
+      - name: Docker meta
+        uses: docker/metadata-action@v4
+        with:
+          tags: |
+            type=semver,pattern={{version}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -42,9 +43,9 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/raphanus:latest
 
       - name: Push Tag to Docker Hub
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         if: ${{ github.event_name == 'release' }}
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v6
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/raphanus:${{ steps.get_git_tag.outputs.GIT_TAG }}
+          tags: ${{ secrets.DOCKER_USERNAME }}/raphanus:${{ steps.meta.outputs.tags }}
