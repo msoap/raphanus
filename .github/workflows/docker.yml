@@ -19,6 +19,8 @@ jobs:
       - name: Docker meta
         uses: docker/metadata-action@v4
         with:
+          images: |
+            ${{ secrets.DOCKER_USERNAME }}/raphanus
           tags: |
             type=semver,pattern={{version}}
 
@@ -40,7 +42,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v6
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/raphanus:latest
+          tags: latest
 
       - name: Push Tag to Docker Hub
         uses: docker/build-push-action@v4
@@ -48,4 +50,4 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v6
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/raphanus:${{ steps.meta.outputs.tags }}
+          tags: ${{ steps.meta.outputs.tags }}
